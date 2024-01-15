@@ -83,3 +83,13 @@ local.properties
 # Uncomment this line if you wish to ignore the project description file.
 # Typically, this file would be tracked if it contains build/dependency configurations:
 #.project
+team-00/target/classes/META-INF/maven/ubc.cosc322/team-00/pom.properties
+team-00/.classpath
+team-00/.project
+team-00/pom.xml
+team-00/target/classes/META-INF/MANIFEST.MF
+team-00/target/classes/META-INF/maven/ubc.cosc322/team-00/pom.xml
+team-00/target/maven-archiver/pom.properties
+team-00/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+team-00/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+team-00/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst

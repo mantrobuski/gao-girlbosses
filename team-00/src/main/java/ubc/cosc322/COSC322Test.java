@@ -8,6 +8,7 @@ import java.util.Map;
 import sfs2x.client.entities.Room;
 import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
+import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.GamePlayer;
 
 /**
@@ -85,6 +86,29 @@ public class COSC322Test extends GamePlayer{
     	//see the method GamePlayer.handleGameMessage() in the game-client-api document. 
     	
     	System.out.println("type: " + messageType);
+    	
+    	if(messageType.equals(GameMessage.GAME_STATE_BOARD))
+    	{
+    		this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get("game-state"));
+    	}
+    	
+    	else if(messageType.equals(GameMessage.GAME_ACTION_START))
+    	{
+    		this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get("game-state"));
+    		System.out.println("Black: " +  (String)msgDetails.get("player-black") + " vs WHITE: " + (String)msgDetails.get("player-white"));
+    	}
+    	
+    	else if(messageType.equals(GameMessage.GAME_ACTION_MOVE))
+    	{
+    		this.getGameGUI().updateGameState(msgDetails);
+    	}
+    	
+    	else
+    	{
+    		System.out.println("UNHANDLED KEY: " + messageType);
+    	}
+    	
+    	/*
     	for (Map.Entry<String,Object> entry : msgDetails.entrySet())
     	{
     		System.out.println("Key: " + entry.getKey());
@@ -93,7 +117,17 @@ public class COSC322Test extends GamePlayer{
         		System.out.println("setting game state");
         		this.getGameGUI().setGameState((ArrayList<Integer>) entry.getValue());
         	}
+    		else if(entry.getKey() == "")
+    		{
+    			System.out.println("updating game state");
+    			this.getGameGUI().updateGameState(null, null, null);
+    		}
+    		else
+    		{
+    			System.out.println("UNHANDLED KEY: " + entry.getKey());
+    		}
     	}
+    	*/
     	
     	
     	

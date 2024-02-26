@@ -191,9 +191,9 @@ public class COSC322Test extends GamePlayer{
 		move[1].add(3); //x
 		move[1].add(8);
 		
-		move[1] = new ArrayList<Integer>();
-		move[1].add(6); //x
-		move[1].add(8);
+		move[2] = new ArrayList<Integer>();
+		move[2].add(6); //x
+		move[2].add(8);
 		
 		return move;
 		

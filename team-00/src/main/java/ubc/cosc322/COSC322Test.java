@@ -165,6 +165,39 @@ public class COSC322Test extends GamePlayer{
 		// TODO Auto-generated method stub
     	gameClient = new GameClient(userName, passwd, this);			
 	}
+	
+	public void takeTurn(ArrayList<Integer> state)
+	{
+		//rn this is a skeleton
+		//decideMove(state) //heuristic function makes a decision and returns an object
+		//(queen x,y move to x,y  shoot arrow, x,y queenToMove.x, queenMove.x, arrow.x
+		
+		ArrayList<Integer>[] move = getMove(state);
+		
+		gameClient.sendMoveMessage(move[0], move[1], move[2]);
+	}
+	
+	public ArrayList<Integer>[] getMove(ArrayList<Integer> state)
+	{
+		//this function will use heuristics to make a move [<x, y>, <x, y> <x,y>] queen to move, square move to, arrow shoot location
+		ArrayList<Integer>[] move = (ArrayList<Integer>[]) new ArrayList[3];
+		
+		//this is hard coded, this will be computed in the future.
+		move[0] = new ArrayList<Integer>();
+		move[0].add(0); //x
+		move[0].add(3); //y
+		
+		move[1] = new ArrayList<Integer>();
+		move[1].add(3); //x
+		move[1].add(8);
+		
+		move[1] = new ArrayList<Integer>();
+		move[1].add(6); //x
+		move[1].add(8);
+		
+		return move;
+		
+	}
 
  
 }//end of class

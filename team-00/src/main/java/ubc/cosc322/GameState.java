@@ -43,10 +43,17 @@ public class GameState
 	}
 	
 	@Override
+	//TODO: compare this to using Arrays.hashCode(board);
 	public int hashCode()
 	{
-		//TODO: implement. only the board needs to be considered
-		return 0;
+		//this is dirty but is faster than Arrays.equals()
+		//sum up every 5th value
+		int hash = 0;
+		for(int i = 0; i < board.length; i+=5)
+		{
+			hash += board[i];
+		}
+		return hash;
 	}
 
 }

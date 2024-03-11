@@ -10,6 +10,7 @@ import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.GamePlayer;
+import ygraph.ai.smartfox.games.amazons.HumanPlayer;
 
 /**
  * An example illustrating how to implement a GamePlayer
@@ -31,7 +32,8 @@ public class COSC322Test extends GamePlayer{
      * @param args for name and passwd (current, any string would work)
      */
     public static void main(String[] args) {				 
-    	COSC322Test player = new COSC322Test(args[0], args[1]);
+    	//COSC322Test player = new COSC322Test(args[0], args[1]);
+    	HumanPlayer player = new HumanPlayer();
     	
     	if(player.getGameGUI() == null) {
     		player.Go();
@@ -94,13 +96,15 @@ public class COSC322Test extends GamePlayer{
     	
     	else if(messageType.equals(GameMessage.GAME_ACTION_START))
     	{
-    		this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get("game-state"));
+    		//this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get("game-state"));
     		System.out.println("Black: " +  (String)msgDetails.get("player-black") + " vs WHITE: " + (String)msgDetails.get("player-white"));
+    		this.takeTurn(null);
     	}
     	
     	else if(messageType.equals(GameMessage.GAME_ACTION_MOVE))
     	{
     		this.getGameGUI().updateGameState(msgDetails);
+    		System.out.println(msgDetails);
     	}
     	
     	else
@@ -185,15 +189,15 @@ public class COSC322Test extends GamePlayer{
 		//this is hard coded, this will be computed in the future.
 		move[0] = new ArrayList<Integer>();
 		move[0].add(0); //x
-		move[0].add(3); //y
+		move[0].add(6); //y
 		
 		move[1] = new ArrayList<Integer>();
-		move[1].add(3); //x
-		move[1].add(8);
+		move[1].add(5); //x
+		move[1].add(1);
 		
 		move[2] = new ArrayList<Integer>();
-		move[2].add(6); //x
-		move[2].add(8);
+		move[2].add(3); //x
+		move[2].add(1);
 		
 		return move;
 		

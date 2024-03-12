@@ -7,14 +7,11 @@ public class GameNode
 	
 	GameState state;
 	HashSet<GameNode> children;
-	HashSet<GameNode> parents;
 	
 	public GameNode(GameState state, GameNode parent)
 	{
 		this.state = state;
 		children = new HashSet<GameNode>();
-		parents = new HashSet<GameNode>();
-		parents.add(parent); //there may be more parents, but there is always at least one
 		parent.children.add(this);
 	}
 	

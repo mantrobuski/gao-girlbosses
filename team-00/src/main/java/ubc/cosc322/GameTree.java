@@ -26,17 +26,14 @@ public class GameTree
 		//node is in the table already
 		if(nodes.containsKey(node))
 		{
-			//add the intended parent as a parent of the already existing node
-			GameNode existingNode = nodes.get(node);
-			existingNode.parents.add(parent);
 			//marks the existing node as a child of the desired parent
+			GameNode existingNode = nodes.get(node);
 			parent.children.add(existingNode);
 			return;
 		}
 		
 		//we have to do the above juggling so that we don't reference the wrong node object if one already exists
 		parent.children.add(node);
-		node.parents.add(parent);
 		nodes.put(node, node);
 		
 	}

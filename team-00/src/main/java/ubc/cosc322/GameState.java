@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class GameState 
 {
 	
-	int[] board; //1D because it is faster [0, 0] is 0.   1 is [1, 0]   10 is [0, 1]
+	int[] board; //1D
 
 	boolean whiteTurn; //true if white to move, false if black to move
 	
@@ -27,7 +27,6 @@ public class GameState
 		this.whiteTurn = whiteTurn;
 	}
 	
-	
 	//white = true means checking white, false means checking black
 	//function returns true if the colour being checked has won the game in this state
 	public boolean checkWin(boolean white)
@@ -35,6 +34,24 @@ public class GameState
 		//TODO: implement.
 		return false;
 	}
+	
+	//0 indexed arrays, 1 indexed board notation because ???
+	public static int yxToIndex(int y, int x)
+	{
+		System.out.println("Returning: ");
+		return (y - 1) + 10* (x - 1);
+	}
+	
+	public static int[] indexToYX(int index)
+	{
+		int y = (index % 10) + 1;
+		int x = (index / 10) + 1;
+		
+		int[] output = {y, x};
+		
+		return output;
+	}
+	
 	
 	@Override
 	public boolean equals(Object other)

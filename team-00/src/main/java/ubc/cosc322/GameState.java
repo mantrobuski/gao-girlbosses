@@ -52,6 +52,35 @@ public class GameState
 		return output;
 	}
 	
+	public ArrayList<Move> getMoves()
+	{
+		ArrayList<Move> output = new ArrayList<Move>();
+		//look at the Move class to see what the Move object is,
+		//it's just the three components in index notation
+		
+		ArrayList<Integer> queens = new ArrayList<Integer>();
+		
+		//set which queen symbol we are looking for
+		int queenTarget = 0;
+		if(this.whiteTurn) queenTarget = 1;
+		else queenTarget = -1;
+		
+		for(int i = 0; i < this.board.length; i++)
+		{
+			//add the index of the queens we care about
+			if(board[i] == queenTarget) queens.add(i);
+		}
+		
+		//one helpful thing
+		//if(board[index] != 0) ---> if this condition is true there is something that blocks vision (shot tile, or another queen)
+		
+		//to create a move
+		Move sample = new Move(0, 1, 2); //these are in index notation
+		output.add(sample);
+		
+		
+		return output;
+	}
 	
 	@Override
 	public boolean equals(Object other)

@@ -140,10 +140,13 @@ public class GameState
 							yQueen++;
 							break;
 					}
+					
+					if(xQueen < 1 || yQueen < 1 || xQueen > 10 || yQueen > 10) break;
 					tempIndex = yxToIndex(yQueen, xQueen);
 	
+					//System.out.println("x:" + xQueen + ", y: " + yQueen);
 					if (this.board[tempIndex] == 0) { // SLOW fix later
-						int[] array = {yxToIndex(queenXY[1], queenXY[0]), tempIndex};
+						int[] array = {yxToIndex(queenXY[0], queenXY[1]), tempIndex};
 						tempMoves.add(array);
 					}
 					else
@@ -154,8 +157,8 @@ public class GameState
 		}
 
 		//do same as above but for arrows with all moves in tempMoves
-		int xArrow = 0;
-		int yArrow = 0;
+		int xArrow = 1;
+		int yArrow = 1;
 
 		for (int i = 0; i < tempMoves.size(); i++) {
 			int[] array = tempMoves.get(i);
@@ -195,6 +198,8 @@ public class GameState
 							yArrow++;
 							break;
 					}
+					
+					if(xArrow < 1 || yArrow < 1 || xArrow > 10 || yArrow > 10) break;
 					tempIndex = yxToIndex(yArrow, xArrow);
 	
 					if (this.board[tempIndex] == 0 || tempIndex == array[0]) {

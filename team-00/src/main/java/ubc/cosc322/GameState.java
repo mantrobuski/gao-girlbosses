@@ -74,12 +74,121 @@ public class GameState
 		//one helpful thing
 		//if(board[index] != 0) ---> if this condition is true there is something that blocks vision (shot tile, or another queen)
 		
-		//to create a move
-		Move sample = new Move(0, 1, 2); //these are in index notation
-		output.add(sample);
+		//for each queen figure out every tile they can move to in all 8 directions
+		int[] queenXY = new int [2]; //will hold xy index for queens
+		ArrayList<int[]> tempMoves = new ArrayList<>(); //holds moves the queen can move to
+		int xQueen = 0;
+		int yQueen = 0;
+		int tempIndex = 0;
 		
-		
-		return output;
+		// loop through each queen
+		for (int i = 0; i < queens.size(); i++) {
+			queenXY = indexToYX(queens.get(i));
+			for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
+			{
+				xQueen = queenXY[1]; //temporary x and y positions. don't want to overwrite initial for next direction 
+				yQueen = queenXY[0];
+				while ((xQueen > 0 && xQueen <= 10) && (yQueen > 0 && yQueen <= 10)) { // while loop for positions within the board
+					switch (j) {
+						case 0: // UP
+							yQueen++;
+							break;
+						case 1: // UP-RIGHT
+							xQueen++;
+							yQueen++;
+							break;
+						case 2: // RIGHT
+							xQueen++;
+							break;
+						case 3: // RIGHT-DOWN
+							xQueen++;
+							yQueen--;
+							break;
+						case 4: // DOWN
+							yQueen--;
+							break;
+						case 5: // DOWN-LEFT
+							yQueen--;
+							xQueen--;
+							break;
+						case 6: // LEFT
+							xQueen--;
+							break;
+						case 7: // UP-LEFT
+							xQueen--;
+							yQueen++;
+							break;
+					}
+					tempIndex = yxToIndex(yQueen, xQueen);
+	
+					if (this.board[tempIndex] == 0) { // SLOW fix later
+						int[] array = {yxToIndex(queenXY[1], queenXY[0]), tempIndex};
+						tempMoves.add(array);
+					}
+					else
+						break;
+
+				}	
+			}
+		}
+
+		//do same as above but for arrows with all moves in tempMoves
+		int xArrow = 0;
+		int yArrow = 0;
+
+		for (int i = 0; i < tempMoves.size(); i++) {
+			int[] array = tempMoves.get(i);
+			queenXY = indexToYX(array[1]);
+			for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
+			{
+				xArrow = queenXY[1];
+				yArrow = queenXY[0];
+				while ((xArrow > 0 && xArrow <= 10) && (yArrow > 0 && yArrow <= 10)) { // could make less cases with mod?
+					switch (j) {
+						case 0: // UP
+							yArrow++;
+							break;
+						case 1: // UP-RIGHT
+							xArrow++;
+							yArrow++;
+							break;
+						case 2: // RIGHT
+							xArrow++;
+							break;
+						case 3: // RIGHT-DOWN
+							xArrow++;
+							yArrow--;
+							break;
+						case 4: // DOWN
+							yArrow--;
+							break;
+						case 5: // DOWN-LEFT
+							yArrow--;
+							xArrow--;
+							break;
+						case 6: // LEFT
+							xArrow--;
+							break;
+						case 7: // UP-LEFT
+							xArrow--;
+							yArrow++;
+							break;
+					}
+					tempIndex = yxToIndex(yArrow, xArrow);
+	
+					if (this.board[tempIndex] == 0 || tempIndex == array[0]) {
+						Move move = new Move(array[0], array[1], tempIndex); //these are in index notation
+						output.add(move);
+					}
+					else
+						break;
+				}	
+			}
+		}
+		if (output.size() == 0)
+			return null;
+		else 	
+			return output;
 	}
 	
 	@Override

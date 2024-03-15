@@ -10,6 +10,27 @@ public class GameState
 
 	boolean whiteTurn; //true if white to move, false if black to move
 	
+	//this is for first turn
+	public GameState()
+	{
+		//all 0s
+		this.board = new int[100];
+		
+		//white queens
+		board[30] = 1;
+		board[60] = 1;
+		board[3] = 1;
+		board[93] = 1;
+		
+		//black queens
+		board[39] = -1;
+		board[69] = -1;
+		board[6] = -1;
+		board[96] = -1;
+		
+		whiteTurn = false;
+	}
+	
 	public GameState(ArrayList<Integer> boardIn, boolean whiteTurn)
 	{
 		//convert arraylist to array because it's faster

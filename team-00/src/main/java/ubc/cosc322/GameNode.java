@@ -8,6 +8,14 @@ public class GameNode
 	GameState state;
 	HashSet<GameNode> children;
 	
+	//this creates a root node
+	public GameNode()
+	{
+		GameState begin = new GameState();
+		this.state = begin;
+		this.children = new HashSet<GameNode>();
+	}
+	
 	public GameNode(GameState state, GameNode parent)
 	{
 		this.state = state;

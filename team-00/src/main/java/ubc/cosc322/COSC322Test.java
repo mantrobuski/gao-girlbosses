@@ -25,6 +25,8 @@ public class COSC322Test extends GamePlayer{
 	
     private String userName = null;
     private String passwd = null;
+    
+    private GameTree tree;
  
 	
     /**
@@ -98,6 +100,7 @@ public class COSC322Test extends GamePlayer{
     	{
     		//this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get("game-state"));
     		System.out.println("Black: " +  (String)msgDetails.get("player-black") + " vs WHITE: " + (String)msgDetails.get("player-white"));
+    		this.initialize(false); //pass what colour we are.
     		this.takeTurn(null);
     	}
     	
@@ -189,6 +192,13 @@ public class COSC322Test extends GamePlayer{
 	
 		return new Move(0, 1, 2);
 		
+	}
+	
+	//true if we are white, false if we are black
+	private void initialize(boolean white) 
+	{
+		GameNode root = new GameNode();
+		this.tree = new GameTree(root);
 	}
 
  

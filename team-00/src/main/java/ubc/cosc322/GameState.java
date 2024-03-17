@@ -73,6 +73,20 @@ public class GameState
 		return output;
 	}
 	
+	//there is no validation here, it is assuming you are providing a valid move
+	public GameState makeMove(Move move)
+	{
+		//new state starts the same as the current state, except the turn is flipped
+		GameState newState = new GameState(this.board, !this.whiteTurn);
+		
+		int qVal = newState.board[move.qCur]; //get if this is a +1 or -1 queen
+		newState.board[move.qCur] = 0; //queen moves off the tile
+		newState.board[move.qMove] = qVal; //queen moves to new tile
+		newState.board[move.arrow] = -99; //shoot the arrow
+		
+		return newState;
+	}
+	
 	public ArrayList<Move> getMoves()
 	{
 		ArrayList<Move> output = new ArrayList<Move>();

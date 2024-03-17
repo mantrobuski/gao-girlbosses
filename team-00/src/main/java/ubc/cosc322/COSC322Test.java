@@ -10,6 +10,7 @@ import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.GamePlayer;
+import ygraph.ai.smartfox.games.amazons.HumanPlayer;
 
 /**
  * An example illustrating how to implement a GamePlayer
@@ -24,6 +25,8 @@ public class COSC322Test extends GamePlayer{
 	
     private String userName = null;
     private String passwd = null;
+    
+    private GameTree tree;
  
 	
     /**
@@ -31,7 +34,8 @@ public class COSC322Test extends GamePlayer{
      * @param args for name and passwd (current, any string would work)
      */
     public static void main(String[] args) {				 
-    	COSC322Test player = new COSC322Test(args[0], args[1]);
+    	//COSC322Test player = new COSC322Test(args[0], args[1]);
+    	HumanPlayer player = new HumanPlayer();
     	
     	if(player.getGameGUI() == null) {
     		player.Go();
@@ -94,13 +98,16 @@ public class COSC322Test extends GamePlayer{
     	
     	else if(messageType.equals(GameMessage.GAME_ACTION_START))
     	{
-    		this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get("game-state"));
+    		//this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get("game-state"));
     		System.out.println("Black: " +  (String)msgDetails.get("player-black") + " vs WHITE: " + (String)msgDetails.get("player-white"));
+    		this.initialize(false); //pass what colour we are.
+    		this.takeTurn(null);
     	}
     	
     	else if(messageType.equals(GameMessage.GAME_ACTION_MOVE))
     	{
     		this.getGameGUI().updateGameState(msgDetails);
+    		System.out.println(msgDetails);
     	}
     	
     	else
@@ -172,31 +179,26 @@ public class COSC322Test extends GamePlayer{
 		//decideMove(state) //heuristic function makes a decision and returns an object
 		//(queen x,y move to x,y  shoot arrow, x,y queenToMove.x, queenMove.x, arrow.x
 		
-		ArrayList<Integer>[] move = getMove(state);
+		Move move = getMove(state);
 		
-		gameClient.sendMoveMessage(move[0], move[1], move[2]);
+		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
 	}
 	
-	public ArrayList<Integer>[] getMove(ArrayList<Integer> state)
+	public Move getMove(ArrayList<Integer> state)
 	{
 		//this function will use heuristics to make a move [<x, y>, <x, y> <x,y>] queen to move, square move to, arrow shoot location
 		ArrayList<Integer>[] move = (ArrayList<Integer>[]) new ArrayList[3];
 		
-		//this is hard coded, this will be computed in the future.
-		move[0] = new ArrayList<Integer>();
-		move[0].add(0); //x
-		move[0].add(3); //y
+	
+		return new Move(0, 1, 2);
 		
-		move[1] = new ArrayList<Integer>();
-		move[1].add(3); //x
-		move[1].add(8);
-		
-		move[2] = new ArrayList<Integer>();
-		move[2].add(6); //x
-		move[2].add(8);
-		
-		return move;
-		
+	}
+	
+	//true if we are white, false if we are black
+	private void initialize(boolean white) 
+	{
+		GameNode root = new GameNode();
+		this.tree = new GameTree(root);
 	}
 
  

@@ -37,43 +37,41 @@ public class GameNode
 	}
 
 
-	public GameState alphaBeta(GameNode node, int depth){
+	public GameState alphaBeta(GameNode node, int depth, int maxDepth){
     
 		// Initial alpha and beta
-		int MAX = 1000;
-		int MIN = -1000;   
-	
-		this.node = node;
+		int MAX = Integer.MAX_VALUE;
+		int MIN = -1 * Integer.MAX_VALUE;
 	
 		// Returns optimal GameState
 	   // output = minimax(depth, node, whiteTurn, values, MIN, MAX);
-		int output = minimax(0, node, true, MIN, MAX);
+		GameState output = minimax(0, node, true, MIN, MAX, maxDepth);
 	
 		return output;
 	}
 	
 	
-	public GameState minimax(int depth, int node, 
+	public GameState minimax(int depth, GameNode node, 
 					   Boolean maximizingPlayer, int alpha,
 					   int beta, int maxDepth)
 	{
-		this.node = node;
 	
 		// Terminating condition
 		if (depth == maxDepth)
 	
-			return this.node.state;
+			return node.state;
 	 
 		if (maximizingPlayer)
 		{
-			int best = MIN;
+			int best =  -1 * Integer.MAX_VALUE;
 	
 			// evaluate children
-			for (GameNode child: hashSet)
+			for (GameNode child: children)
 			{
 				GameState newState = minimax(depth + 1, child,
-								  false, values, alpha, beta);
-				int val = newState.getHeuristic(); // TODO: make sure this links properly
+								  false, alpha, beta, maxDepth);
+				//int val = newState.getHeuristic(); // TODO: make sure this links properly
+				int val = -99;
 				best = Math.max(best, val);
 				alpha = Math.max(alpha, best);
 	 
@@ -81,18 +79,19 @@ public class GameNode
 				if (beta <= alpha)
 					break;
 			}
-			return this.node.state; 
+			return node.state; 
 		}
 		else
 		{
-			int best = MAX;
+			int best = Integer.MAX_VALUE;
 	 
 			// evaluate children
-			for (GameNode child: hashSet)
+			for (GameNode child: children)
 			{
 				GameState newState = minimax(depth + 1, child,
-								  true, values, alpha, beta);
-				inct val = newState.getHeuristic();   // TODO: make sure this links properly
+								  true, alpha, beta, maxDepth);
+				//int val = newState.getHeuristic();   // TODO: make sure this links properly
+				int val = -99;
 				best = Math.min(best, val);
 				beta = Math.min(beta, best);
 	 
@@ -100,7 +99,7 @@ public class GameNode
 				if (beta <= alpha)
 					break;
 			}
-			return this.node.state;
+			return node.state;
 		}
 	}
 

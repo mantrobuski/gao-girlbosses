@@ -64,9 +64,11 @@ public class COSC322Test extends GamePlayer{
     	GameNode root = new GameNode();
     	this.tree = new GameTree(root);
     	
+    	benchmark();
+    	
     	//run as many playouts right now as we can get away with
-    	int initialPlayouts = 200000;
-    	this.tree.runPlayouts(root, initialPlayouts);
+    	//int initialPlayouts = 200000;
+    	//this.tree.runPlayouts(root, initialPlayouts);
     	
     	this.userName = userName;
     	this.passwd = passwd;
@@ -235,10 +237,15 @@ public class COSC322Test extends GamePlayer{
 	      FileWriter myWriter = new FileWriter("bench.txt");
 	      
 	      long start = System.currentTimeMillis();
-	      int playouts = 100000;
+	      int playouts = 10000000;
 	      
 	      //benchmark here
+	      this.tree.runPlayouts(this.tree.getRoot(), playouts);
 	      
+	      long stop = System.currentTimeMillis();
+	      
+	      myWriter.write(playouts + " playouts in " +  (int)(stop - start) + "ms");
+	    		  
 
 	      myWriter.close();
 	      System.out.println("Successfully wrote to the file.");

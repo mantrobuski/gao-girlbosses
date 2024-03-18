@@ -10,7 +10,10 @@ public class GameState
 
 	boolean whiteTurn; //true if white to move, false if black to move
 	
-	//this is for first turn
+	int val = 0; //this will be updated by the heuristic function
+	boolean evaluated = false;
+	
+	//this is for initial state which is always the same
 	public GameState()
 	{
 		//all 0s
@@ -48,18 +51,10 @@ public class GameState
 		this.whiteTurn = whiteTurn;
 	}
 	
-	//white = true means checking white, false means checking black
-	//function returns true if the colour being checked has won the game in this state
-	public boolean checkWin(boolean white)
-	{
-		//TODO: implement.
-		return false;
-	}
 	
 	//0 indexed arrays, 1 indexed board notation because ???
 	public static int yxToIndex(int y, int x)
 	{
-		System.out.println("Returning: ");
 		return (y - 1) + 10* (x - 1);
 	}
 	
@@ -71,6 +66,20 @@ public class GameState
 		int[] output = {y, x};
 		
 		return output;
+	}
+	
+	//there is no validation here, it is assuming you are providing a valid move
+	public GameState makeMove(Move move)
+	{
+		//new state starts the same as the current state, except the turn is flipped
+		GameState newState = new GameState(this.board, !this.whiteTurn);
+		
+		int qVal = newState.board[move.qCur]; //get if this is a +1 or -1 queen
+		newState.board[move.qCur] = 0; //queen moves off the tile
+		newState.board[move.qMove] = qVal; //queen moves to new tile
+		newState.board[move.arrow] = -99; //shoot the arrow
+		
+		return newState;
 	}
 	
 	public ArrayList<Move> getMoves()
@@ -216,6 +225,177 @@ public class GameState
 		else 	
 			return output;
 	}
+	
+	
+	//***********************************************************************
+	//swap out the function called here to use a different heuristic function
+	//***********************************************************************
+	public int evaluate() 
+	{
+		if(this.evaluated) return this.val;
+		
+		this.evaluated = true;
+		
+		//first check if this is a won or lost position
+		//if white wins, val should be +inf - 1, black win should return -inf + 1
+		ArrayList<Move> moves = getMoves();
+		if(moves == null)
+		{
+			//no moves remain
+			//the player whos turn it is loses
+			val = (whiteTurn ? Integer.MIN_VALUE + 1 : Integer.MAX_VALUE - 1);
+		}
+		
+		//otherwise use a heuristic if no winner in position
+		else this.val = territoryHeuristic(); //***CHANGE THIS ***//
+		
+		return this.val;
+	}
+	
+	
+	private int territoryHeuristic()
+	{
+		//we are going to count the total number of tiles each queen sees, black counts for negative
+		int territory = 0;
+		
+		//create two array lists containing the location of each queen (index notation)
+		ArrayList<Integer> whiteQueens = new ArrayList<Integer>();
+		ArrayList<Integer> blackQueens = new ArrayList<Integer>();
+		for(int i = 0; i < this.board.length; i++)
+		{
+			//add the index of the queens we care about
+			if(board[i] == 1) whiteQueens.add(i);
+			if(board[i] == -1) blackQueens.add(i);
+		}
+		
+		//for each white queen
+		for(int queen : whiteQueens)
+		{
+			//check 4 directions
+			
+			//up
+			int cursor = queen;
+			cursor++;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory += 1;
+				}
+				else break;
+				cursor++;
+			}while(cursor % 10 != 0);
+			
+			//down
+			cursor = queen;
+			cursor--;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory += 1;
+				}
+				else break;
+				cursor--;
+			}while(cursor % 10 != 9);
+			
+			//right
+			cursor = queen;
+			cursor += 10;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory += 1;
+				}
+				else break;
+				cursor += 10;
+			}while(cursor >  9);
+			
+			//left
+			cursor = queen;
+			cursor -= 10;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory += 1;
+				}
+				else break;
+				cursor -= 10;
+			}while(cursor < 90);
+		}
+		
+		//for each black queen
+		for(int queen : blackQueens)
+		{
+			//check 4 directions
+			
+			//up
+			int cursor = queen;
+			cursor++;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory -= 1;
+				}
+				else break;
+				cursor++;
+			}while(cursor % 10 != 0);
+			
+			//down
+			cursor = queen;
+			cursor--;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory -= 1;
+				}
+				else break;
+				cursor--;
+			}while(cursor % 10 != 9);
+			
+			//right
+			cursor = queen;
+			cursor += 10;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory -= 1;
+				}
+				else break;
+				cursor += 10;
+			}while(cursor >  9);
+			
+			//left
+			cursor = queen;
+			cursor -= 10;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory -= 1;
+				}
+				else break;
+				cursor -= 10;
+			}while(cursor < 90);
+		}
+		
+		
+		return territory;
+	}
+	
 	
 	@Override
 	public boolean equals(Object other)

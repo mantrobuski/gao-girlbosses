@@ -1,6 +1,5 @@
 package ubc.cosc322;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -11,6 +10,9 @@ public class GameNode
 	HashSet<GameNode> children;
 	
 	HashMap<GameNode, Move> route; //this is a handy index that contains the move that was required to get from a nodes parent to it 
+	
+	int playouts = 0;
+	int whiteWins = 0;
 	
 	//this creates a root node
 	public GameNode()
@@ -33,6 +35,7 @@ public class GameNode
 	{
 		route.put(parent, move);
 	}
+	
 	
 	@Override
 	public boolean equals(Object other)

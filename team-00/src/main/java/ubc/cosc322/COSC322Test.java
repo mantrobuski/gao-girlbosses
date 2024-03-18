@@ -56,6 +56,14 @@ public class COSC322Test extends GamePlayer{
       * @param passwd
      */
     public COSC322Test(String userName, String passwd) {
+    	
+    	GameNode root = new GameNode();
+    	this.tree = new GameTree(root);
+    	
+    	//run as many playouts right now as we can get away with
+    	int initialPlayouts = 200000;
+    	this.tree.runPlayouts(root, initialPlayouts);
+    	
     	this.userName = userName;
     	this.passwd = passwd;
     	
@@ -179,26 +187,40 @@ public class COSC322Test extends GamePlayer{
 		//decideMove(state) //heuristic function makes a decision and returns an object
 		//(queen x,y move to x,y  shoot arrow, x,y queenToMove.x, queenMove.x, arrow.x
 		
-		Move move = getMove(state);
+		//MAKE AS MANY PLAYOUTS AS POSSIBLE
+		
+		Move move = getMove();
+		
+		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
 		
 		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
+		
+		GameState newState = tree.getRoot().state.makeMove(move);
+		GameNode newRoot = new GameNode(newState); //this is fake
+		this.tree.setRoot(tree.nodes.get(newRoot));
 	}
 	
-	public Move getMove(ArrayList<Integer> state)
+	public void opponentTurn(Move move)
+	{
+		GameState newState = tree.getRoot().state.makeMove(move);
+		GameNode newRoot = new GameNode(newState);
+		
+		this.tree.addNode(newRoot, tree.getRoot(), move);
+		this.tree.setRoot(newRoot);
+	}
+	
+	public Move getMove()
 	{
 		//this function will use heuristics to make a move [<x, y>, <x, y> <x,y>] queen to move, square move to, arrow shoot location
-		ArrayList<Integer>[] move = (ArrayList<Integer>[]) new ArrayList[3];
-		
-	
-		return new Move(0, 1, 2);
-		
+		return tree.selectMove();
 	}
 	
 	//true if we are white, false if we are black
 	private void initialize(boolean white) 
 	{
-		GameNode root = new GameNode();
-		this.tree = new GameTree(root);
+		this.tree.setColour(white);
+		
+		//do more here
 	}
 
  

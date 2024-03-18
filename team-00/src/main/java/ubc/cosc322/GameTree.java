@@ -1,23 +1,23 @@
 package ubc.cosc322;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Random;
 
 public class GameTree 
 {
 	//this is a table where key == value, this is because you can get from the table by object
 	//hashset does not have this property
 	//doing this because we have ovverride the equals of GameNode to only look at the state of the board and to ignore the parents and children when comparing because we do it in this class instead
-	private Hashtable<GameNode, GameNode> nodes;
+	Hashtable<GameNode, GameNode> nodes;
 	private GameNode root;
 	
 	private boolean white; //are we white or black, true for white
 	
-	public GameTree(GameNode root, boolean white)
+	public GameTree(GameNode root)
 	{
 		this.root = root;
-		this.white = white;
 		nodes = new Hashtable<GameNode, GameNode>(); 
 	}
 	
@@ -26,7 +26,13 @@ public class GameTree
 		return root;
 	}
 	
-	public void addNode(GameNode node, GameNode parent, Move move)
+	public void setRoot(GameNode node)
+	{
+		this.root = node;
+	}
+	
+	//returns the node that was just added (or the existing one)
+	public GameNode addNode(GameNode node, GameNode parent, Move move)
 	{
 		node.addRoute(parent, move);
 		
@@ -36,14 +42,123 @@ public class GameTree
 			//marks the existing node as a child of the desired parent
 			GameNode existingNode = nodes.get(node);
 			parent.children.add(existingNode);
-			return;
+			return existingNode;
 		}
 		
 		//we have to do the above juggling so that we don't reference the wrong node object if one already exists
 		parent.children.add(node);
 		nodes.put(node, node);
 		
+		return node;
+		
 	}
+	
+	public void setColour(boolean white)
+	{
+		this.white = white;
+	}
+	
+	public Move selectMove()
+	{
+		//run UCB on each child
+		double bestScore = -1;
+		Move bestMove = null;
+		
+		for(GameNode child : root.children)
+		{
+			double eval = UCB(child);
+			if(eval > bestScore)
+			{
+				bestScore = eval;
+				bestMove = child.route.get(root); //get the move that routes from root -> child
+			}
+		}
+		
+		//this code should NEVER RUN, but it's a fallback in case there is a bug somewhere
+		if(bestMove == null)
+		{
+			//if we couldn't select a move, pick one at random
+			ArrayList<Move> moves = root.state.getMoves();
+			bestMove = moves.get(new Random().nextInt(moves.size()));
+		}
+		
+		return bestMove;
+		
+	}
+	
+	//this can probably be optimzed at the cost of accuracy
+	public double UCB(GameNode node)
+	{
+		double whiteWinPercentage = node.whiteWins / node.playouts;
+		double xbar = (white ? whiteWinPercentage : 1 - whiteWinPercentage); //flipped odds if we are black
+		
+		double xbarSquared = xbar * xbar;
+		double logRoot = Math.log(root.playouts);
+		
+		double confidence = (logRoot / node.playouts) * Math.min(0.25, xbar - xbarSquared + Math.sqrt((2 * logRoot) / node.playouts));
+		
+		return xbar + Math.sqrt(confidence);
+	}
+	
+	//runs count # of playouts
+	public void runPlayouts(GameNode start, int count)
+	{
+		for(int i = 0; i < count; i++)
+		{
+			playout(start);
+		}
+	}
+	
+	//simulate full game
+	public void playout(GameNode start)
+	{
+		
+		GameNode cursor = start;
+		ArrayList<Move> moves = cursor.state.getMoves();
+		
+		//hold the visited moves, this will get updated after the result is determined
+		HashSet<GameNode> visited = new HashSet<GameNode>();
+		
+		//moves is null when the game is over
+		while(moves != null)
+		{
+			visited.add(cursor);
+			
+			//randomly select a move
+			Move move = moves.get(new Random().nextInt(moves.size()));
+			
+			//get resulting state from move
+			GameState newState = cursor.state.makeMove(move);
+			
+			//create node using the state
+			GameNode newNode = new GameNode(newState);
+			
+			//add it to the tree
+			this.addNode(newNode, cursor, move);
+			
+			//move cursor to this new node
+			cursor = newNode;
+			
+			//get new possible moves
+			moves = cursor.state.getMoves();
+		}
+		
+		visited.add(cursor);
+		
+		//determine result
+		//the player whos turn it is loses (at end state)
+		boolean result = !cursor.state.whiteTurn; //true for white win
+		
+		//back propigate
+		for(GameNode node : visited)
+		{
+			node.playouts += 1;
+			if(result) node.whiteWins += 1;
+			//no need to do this for black, white win % is whiteWins / playouts, black win % is 1 - white win %
+		}
+		
+	}
+			
 	
 	public Move alphaBeta(int maxDepth)
 	{

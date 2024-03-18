@@ -1,5 +1,7 @@
 package ubc.cosc322;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -72,7 +74,7 @@ public class GameState
 	public GameState makeMove(Move move)
 	{
 		//new state starts the same as the current state, except the turn is flipped
-		GameState newState = new GameState(this.board, !this.whiteTurn);
+		GameState newState = new GameState(this.board.clone(), !this.whiteTurn);
 		
 		int qVal = newState.board[move.qCur]; //get if this is a +1 or -1 queen
 		newState.board[move.qCur] = 0; //queen moves off the tile
@@ -220,8 +222,40 @@ public class GameState
 				}	
 			}
 		}
+		
+		
+		/*
+		try 
+    	{
+	      FileWriter myWriter = new FileWriter("boardstate.txt");
+	      
+	      int count = 0;
+	      for(int i = 0; i < board.length; i++)
+	      {
+	    	  myWriter.write(board[i]);
+	    	  count++;
+	    	  if(count == 10)
+	    	  {
+	    		  myWriter.write("\n");
+	    		  count = 0;
+	    	  }
+	      }
+	    		  
+
+	      myWriter.close();
+	      System.out.println("Successfully wrote to the file.");
+	    } catch (IOException e) 
+	    {
+	      System.out.println("An error occurred.");
+	      e.printStackTrace();
+	    }
+		*/
+		//printBoard();
 		if (output.size() == 0)
+		{
+			//System.out.println("NO MOVES");
 			return null;
+		}
 		else 	
 			return output;
 	}
@@ -394,6 +428,23 @@ public class GameState
 		
 		
 		return territory;
+	}
+	
+	public void printBoard()
+	{
+		for(int y = 1; y <= 10; y++)
+		{
+			for(int x = 1; x <= 10; x++)
+			{
+				System.out.print(board[GameState.yxToIndex(y, x)] + " ");
+			}
+			
+			System.out.println("");
+		}
+		
+		
+		System.out.println("");
+		System.out.println("----------------");
 	}
 	
 	

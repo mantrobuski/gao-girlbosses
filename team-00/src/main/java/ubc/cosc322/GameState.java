@@ -245,7 +245,6 @@ public class GameState
 		//we are going to count the total number of tiles each queen sees, black counts for negative
 		int territory = 0;
 		
-		
 		//create two array lists containing the location of each queen (index notation)
 		ArrayList<Integer> whiteQueens = new ArrayList<Integer>();
 		ArrayList<Integer> blackQueens = new ArrayList<Integer>();

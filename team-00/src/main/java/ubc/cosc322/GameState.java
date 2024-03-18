@@ -67,6 +67,20 @@ public class GameState
 		return output;
 	}
 	
+	//there is no validation here, it is assuming you are providing a valid move
+	public GameState makeMove(Move move)
+	{
+		//new state starts the same as the current state, except the turn is flipped
+		GameState newState = new GameState(this.board, !this.whiteTurn);
+		
+		int qVal = newState.board[move.qCur]; //get if this is a +1 or -1 queen
+		newState.board[move.qCur] = 0; //queen moves off the tile
+		newState.board[move.qMove] = qVal; //queen moves to new tile
+		newState.board[move.arrow] = -99; //shoot the arrow
+		
+		return newState;
+	}
+	
 	public ArrayList<Move> getMoves()
 	{
 		ArrayList<Move> output = new ArrayList<Move>();
@@ -210,6 +224,160 @@ public class GameState
 		else 	
 			return output;
 	}
+	
+	
+	//***********************************************************************
+	//swap out the function called here to use a different heuristic function
+	//***********************************************************************
+	public int evalutate() 
+	{
+		return territoryHeuristic();
+	}
+	
+	
+	private int territoryHeuristic()
+	{
+		//we are going to count the total number of tiles each queen sees, black counts for negative
+		int territory = 0;
+		
+		//create two array lists containing the location of each queen (index notation)
+		ArrayList<Integer> whiteQueens = new ArrayList<Integer>();
+		ArrayList<Integer> blackQueens = new ArrayList<Integer>();
+		for(int i = 0; i < this.board.length; i++)
+		{
+			//add the index of the queens we care about
+			if(board[i] == 1) whiteQueens.add(i);
+			if(board[i] == -1) blackQueens.add(i);
+		}
+		
+		//for each white queen
+		for(int queen : whiteQueens)
+		{
+			//check 4 directions
+			
+			//up
+			int cursor = queen;
+			cursor++;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory += 1;
+				}
+				else break;
+				cursor++;
+			}while(cursor % 10 != 0);
+			
+			//down
+			cursor = queen;
+			cursor--;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory += 1;
+				}
+				else break;
+				cursor--;
+			}while(cursor % 10 != 9);
+			
+			//right
+			cursor = queen;
+			cursor += 10;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory += 1;
+				}
+				else break;
+				cursor += 10;
+			}while(cursor >  9);
+			
+			//left
+			cursor = queen;
+			cursor -= 10;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory += 1;
+				}
+				else break;
+				cursor -= 10;
+			}while(cursor < 90);
+		}
+		
+		//for each black queen
+		for(int queen : blackQueens)
+		{
+			//check 4 directions
+			
+			//up
+			int cursor = queen;
+			cursor++;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory -= 1;
+				}
+				else break;
+				cursor++;
+			}while(cursor % 10 != 0);
+			
+			//down
+			cursor = queen;
+			cursor--;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory -= 1;
+				}
+				else break;
+				cursor--;
+			}while(cursor % 10 != 9);
+			
+			//right
+			cursor = queen;
+			cursor += 10;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory -= 1;
+				}
+				else break;
+				cursor += 10;
+			}while(cursor >  9);
+			
+			//left
+			cursor = queen;
+			cursor -= 10;
+			do
+			{
+				if(cursor > 99 || cursor < 0) break;
+				else if(board[cursor] == 0)
+				{
+					territory -= 1;
+				}
+				else break;
+				cursor -= 10;
+			}while(cursor < 90);
+		}
+		
+		
+		return territory;
+	}
+	
 	
 	@Override
 	public boolean equals(Object other)

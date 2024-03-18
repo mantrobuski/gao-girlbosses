@@ -231,6 +231,54 @@ public class GameState
 			return output;
 	}
 	
+	//THIS SHOULD RETURN A POSITIVE NUMBER FOR WHITE WINNING AND A NEGATIVE ONE FOR BLACK WINNING
+	//USE this.board, to reference the board
+	
+	public int minDistanceHeuristic() {// datatype may need to be changed
+		int distTotal=0;
+		int boardSize = 10;
+		
+		//this needs to work regardless of the player
+		//so change the logic to use negative for black and positive for white and add together the white and black scores to get a combined evaluation
+		
+		for(int i=0; i<boardSize; i++) {
+			for(int j=0; j<boardSize; j++) {
+//				if(board[i][j]==player) {
+//					int distance= minOpponentDistance(player,i,j);
+//					distTotal += distance;
+//					
+//				}
+			}
+		}
+		
+		
+		return distTotal;
+		
+		
+	}
+	
+	public int minOpponentDistance(int row, int col) {
+		int minDist= Integer.MAX_VALUE;
+		int boardSize = 10;
+		
+		//you can use GameState.indexToYX() to convert from index notation to coordinates
+		//GameState.yxToIndex() will go the other way
+		
+		// iterating through the board to find opponents
+		for(int i=0; i< boardSize; i++) {
+			for(int j=0; j< boardSize; j++) {
+				//0 is empty position, +1 is white queen, -1 is black queen in the board array
+//				if(board[i][j] != player && board[i][j]!=' ') {
+//					int distance= Math.abs(row-i)+Math.abs(col-j);
+//					if(distance<minDist) {
+//						minDist=distance;
+//					}
+//				}
+			}
+		}
+		return minDist;
+	}
+	
 	@Override
 	public boolean equals(Object other)
 	{

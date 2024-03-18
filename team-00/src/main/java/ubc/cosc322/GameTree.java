@@ -12,9 +12,12 @@ public class GameTree
 	private Hashtable<GameNode, GameNode> nodes;
 	private GameNode root;
 	
-	public GameTree(GameNode root)
+	private boolean white; //are we white or black, true for white
+	
+	public GameTree(GameNode root, boolean white)
 	{
 		this.root = root;
+		this.white = white;
 		nodes = new Hashtable<GameNode, GameNode>(); 
 	}
 	
@@ -42,16 +45,15 @@ public class GameTree
 		
 	}
 	
-	public Move alphaBeta(GameNode node, int maxDepth)
+	public Move alphaBeta(int maxDepth)
 	{
 
 		// Initial alpha and beta
 		int MAX = Integer.MAX_VALUE;
 		int MIN = -1 * Integer.MAX_VALUE;
 
-		// Returns optimal GameState
-	   // output = minimax(depth, node, whiteTurn, values, MIN, MAX);
-		MoveVal solution = minimax(0, node, true, MIN, MAX, maxDepth);
+		//we want to use maximizing player if we're white, we want the minimizing player if we're black
+		MoveVal solution = minimax(0, root, white, MIN, MAX, maxDepth);
 		
 		if(solution.move == null) System.err.println("NO MOVES IN POSITION (according to minimax)");
 		

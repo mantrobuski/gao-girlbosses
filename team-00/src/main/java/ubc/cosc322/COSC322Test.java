@@ -1,6 +1,10 @@
 
 package ubc.cosc322;
 
+import java.io.FileWriter;
+import java.io.IOException;
+//import java.io.FileWriter;
+//import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +38,8 @@ public class COSC322Test extends GamePlayer{
      * @param args for name and passwd (current, any string would work)
      */
     public static void main(String[] args) {				 
-    	//COSC322Test player = new COSC322Test(args[0], args[1]);
-    	HumanPlayer player = new HumanPlayer();
+    	COSC322Test player = new COSC322Test(args[0], args[1]);
+    	//HumanPlayer player = new HumanPlayer();
     	
     	if(player.getGameGUI() == null) {
     		player.Go();
@@ -79,6 +83,7 @@ public class COSC322Test extends GamePlayer{
     	{
     		gamegui.setRoomInformation(rooms);
     	}
+  
     }
 
     @Override
@@ -199,6 +204,27 @@ public class COSC322Test extends GamePlayer{
 	{
 		GameNode root = new GameNode();
 		this.tree = new GameTree(root);
+	}
+	
+	public void benchmark()
+	{
+		try 
+    	{
+	      FileWriter myWriter = new FileWriter("bench.txt");
+	      
+	      long start = System.currentTimeMillis();
+	      int playouts = 100000;
+	      
+	      //benchmark here
+	      
+
+	      myWriter.close();
+	      System.out.println("Successfully wrote to the file.");
+	    } catch (IOException e) 
+	    {
+	      System.out.println("An error occurred.");
+	      e.printStackTrace();
+	    }
 	}
 
  

@@ -89,7 +89,9 @@ public class GameTree
 	//this can probably be optimzed at the cost of accuracy
 	public double UCB(GameNode node)
 	{
-		double whiteWinPercentage = node.whiteWins / node.playouts;
+		double whiteWinPercentage = 0.5;
+		if(node.playouts != 0)whiteWinPercentage = node.whiteWins / node.playouts;
+		
 		double xbar = (white ? whiteWinPercentage : 1 - whiteWinPercentage); //flipped odds if we are black
 		
 		double xbarSquared = xbar * xbar;

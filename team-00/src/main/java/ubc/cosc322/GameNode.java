@@ -21,10 +21,11 @@ public class GameNode
 		this.route = null;
 	}
 	
-	public GameNode(GameState state, Move move)
+	public GameNode(GameState state)
 	{
 		this.state = state;
 		children = new HashSet<GameNode>();
+		this.route = new HashMap<GameNode, Move>();
 	}
 	
 	//this adds a parent and the move it takes to get from parent to here to the map

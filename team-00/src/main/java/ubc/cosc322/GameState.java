@@ -11,6 +11,7 @@ public class GameState
 	boolean whiteTurn; //true if white to move, false if black to move
 	
 	int val = 0; //this will be updated by the heuristic function
+	boolean evaluated = false;
 	
 	//this is for initial state which is always the same
 	public GameState()
@@ -229,9 +230,26 @@ public class GameState
 	//***********************************************************************
 	//swap out the function called here to use a different heuristic function
 	//***********************************************************************
-	public int evalutate() 
+	public int evaluate() 
 	{
-		return territoryHeuristic();
+		if(this.evaluated) return this.val;
+		
+		this.evaluated = true;
+		
+		//first check if this is a won or lost position
+		//if white wins, val should be +inf - 1, black win should return -inf + 1
+		ArrayList<Move> moves = getMoves();
+		if(moves == null)
+		{
+			//no moves remain
+			//the player whos turn it is loses
+			val = (whiteTurn ? Integer.MIN_VALUE + 1 : Integer.MAX_VALUE - 1);
+		}
+		
+		//otherwise use a heuristic if no winner in position
+		else this.val = territoryHeuristic(); //***CHANGE THIS ***//
+		
+		return this.val;
 	}
 	
 	

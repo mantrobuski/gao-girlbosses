@@ -400,7 +400,8 @@ public class GameState
 	@Override
 	public boolean equals(Object other)
 	{
-		return Arrays.equals((int[]) other, this.board);
+		GameState otherState = (GameState) other;
+		return Arrays.equals(otherState.board, this.board);
 	}
 	
 	@Override

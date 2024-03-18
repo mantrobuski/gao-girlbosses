@@ -259,6 +259,15 @@ public class GameState
 		else 	
 			return output;
 	}
+
+	public boolean legalMove(Move move){
+		ArrayList<Move> opponentMoves = new ArrayList<>(); // holds possible opponent moves
+		opponentMoves = this.getMoves(); // gets moves from function
+		if (opponentMoves.includes(move)) // returns true if move is legal, false if not
+			return true;
+		else
+			return false;
+	}
 	
 	
 	//***********************************************************************

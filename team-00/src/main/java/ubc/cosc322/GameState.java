@@ -10,7 +10,9 @@ public class GameState
 
 	boolean whiteTurn; //true if white to move, false if black to move
 	
-	//this is for first turn
+	int val = 0; //this will be updated by the heuristic function
+	
+	//this is for initial state which is always the same
 	public GameState()
 	{
 		//all 0s
@@ -48,18 +50,10 @@ public class GameState
 		this.whiteTurn = whiteTurn;
 	}
 	
-	//white = true means checking white, false means checking black
-	//function returns true if the colour being checked has won the game in this state
-	public boolean checkWin(boolean white)
-	{
-		//TODO: implement.
-		return false;
-	}
 	
 	//0 indexed arrays, 1 indexed board notation because ???
 	public static int yxToIndex(int y, int x)
 	{
-		System.out.println("Returning: ");
 		return (y - 1) + 10* (x - 1);
 	}
 	

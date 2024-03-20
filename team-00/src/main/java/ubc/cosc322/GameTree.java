@@ -162,19 +162,27 @@ public class GameTree
 	}
 			
 	
-	public Move alphaBeta(int maxDepth)
+	public Move iterativeDeepeningAlphaBeta(int maxDepth)
 	{
 
-		// Initial alpha and beta
-		int MAX = Integer.MAX_VALUE;
-		int MIN = -1 * Integer.MAX_VALUE;
-
-		//we want to use maximizing player if we're white, we want the minimizing player if we're black
-		MoveVal solution = minimax(0, root, white, MIN, MAX, maxDepth);
+		Move solution = null;
 		
-		if(solution.move == null) System.err.println("NO MOVES IN POSITION (according to minimax)");
+		for (int depth = 1; depth < maxDepth; depth++) {
+			// Initial alpha and beta
+			int MAX = Integer.MAX_VALUE;
+			int MIN = -1 * Integer.MAX_VALUE;
+	
+			//we want to use maximizing player if we're white, we want the minimizing player if we're black
+			MoveVal result = minimax(0, root, white, MIN, MAX, depth);
+			
+			if (result != null) { 
+				solution = result.move; 
+				} 
+			}
 		
-		return solution.move;
+		if(solution == null) System.err.println("NO MOVES IN POSITION (according to minimax)");
+		
+		return solution;
 	}
 
 

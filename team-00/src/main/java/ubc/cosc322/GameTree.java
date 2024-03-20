@@ -178,6 +178,12 @@ public class GameTree
 			if (result != null) { 
 				solution = result.move; 
 				} 
+			
+			// TODO: Elana's Timer
+			// if (timerInterupt) {
+			//		break;
+			// }
+			//
 			}
 		
 		if(solution == null) System.err.println("NO MOVES IN POSITION (according to minimax)");

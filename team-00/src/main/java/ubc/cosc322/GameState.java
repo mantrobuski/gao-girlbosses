@@ -84,96 +84,71 @@ public class GameState
 		return newState;
 	}
 	
-	public ArrayList<Move> getMoves()
-	{
-		ArrayList<Move> output = new ArrayList<Move>();
-		//look at the Move class to see what the Move object is,
-		//it's just the three components in index notation
-		
-		ArrayList<Integer> queens = new ArrayList<Integer>();
-		
-		//set which queen symbol we are looking for
-		int queenTarget = 0;
-		if(this.whiteTurn) queenTarget = 1;
-		else queenTarget = -1;
-		
-		for(int i = 0; i < this.board.length; i++)
-		{
-			//add the index of the queens we care about
-			if(board[i] == queenTarget) queens.add(i);
-		}
-		
-		//one helpful thing
-		//if(board[index] != 0) ---> if this condition is true there is something that blocks vision (shot tile, or another queen)
-		
-		//for each queen figure out every tile they can move to in all 8 directions
-		int[] queenXY = new int [2]; //will hold xy index for queens
-		ArrayList<int[]> tempMoves = new ArrayList<>(); //holds moves the queen can move to
+	public ArrayList<int[]> queenMoves(int queenXY) {
+		int[] array = new int [2];
+		ArrayList<Integer> tempMoves = new ArrayList<>();
 		int xQueen = 0;
 		int yQueen = 0;
 		int tempIndex = 0;
 		
-		// loop through each queen
-		for (int i = 0; i < queens.size(); i++) {
-			queenXY = indexToYX(queens.get(i));
-			for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
-			{
-				xQueen = queenXY[1]; //temporary x and y positions. don't want to overwrite initial for next direction 
-				yQueen = queenXY[0];
-				while ((xQueen > 0 && xQueen <= 10) && (yQueen > 0 && yQueen <= 10)) { // while loop for positions within the board
-					switch (j) {
-						case 0: // UP
-							yQueen++;
-							break;
-						case 1: // UP-RIGHT
-							xQueen++;
-							yQueen++;
-							break;
-						case 2: // RIGHT
-							xQueen++;
-							break;
-						case 3: // RIGHT-DOWN
-							xQueen++;
-							yQueen--;
-							break;
-						case 4: // DOWN
-							yQueen--;
-							break;
-						case 5: // DOWN-LEFT
-							yQueen--;
-							xQueen--;
-							break;
-						case 6: // LEFT
-							xQueen--;
-							break;
-						case 7: // UP-LEFT
-							xQueen--;
-							yQueen++;
-							break;
-					}
-					
-					if(xQueen < 1 || yQueen < 1 || xQueen > 10 || yQueen > 10) break;
-					tempIndex = yxToIndex(yQueen, xQueen);
-	
-					//System.out.println("x:" + xQueen + ", y: " + yQueen);
-					if (this.board[tempIndex] == 0) { // SLOW fix later
-						int[] array = {yxToIndex(queenXY[0], queenXY[1]), tempIndex};
-						tempMoves.add(array);
-					}
-					else
+		array = indexToYX(queenXY);
+		for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
+		{
+			xQueen = array[1]; //temporary x and y positions. don't want to overwrite initial for next direction 
+			yQueen = array[0];
+			while ((xQueen > 0 && xQueen <= 10) && (yQueen > 0 && yQueen <= 10)) { // while loop for positions within the board
+				switch (j) {
+					case 0: // UP
+						yQueen++;
 						break;
+					case 1: // UP-RIGHT
+						xQueen++;
+						yQueen++;
+						break;
+					case 2: // RIGHT
+						xQueen++;
+						break;
+					case 3: // RIGHT-DOWN
+						xQueen++;
+						yQueen--;
+						break;
+					case 4: // DOWN
+						yQueen--;
+						break;
+					case 5: // DOWN-LEFT
+						yQueen--;
+						xQueen--;
+						break;
+					case 6: // LEFT
+						xQueen--;
+						break;
+					case 7: // UP-LEFT
+						xQueen--;
+						yQueen++;
+						break;
+				}
+					
+				if(xQueen < 1 || yQueen < 1 || xQueen > 10 || yQueen > 10) break;
+				tempIndex = yxToIndex(yQueen, xQueen);
 
-				}	
-			}
+				//System.out.println("x:" + xQueen + ", y: " + yQueen);
+				if (this.board[tempIndex] == 0) { // SLOW fix later
+					tempMoves.add(tempIndex);
+				}
+				else
+					break;
+			}	
 		}
+		return tempMoves;
+	}
 
-		//do same as above but for arrows with all moves in tempMoves
+	public ArrayList<Move> arrowMoves(ArrayList<Integer> moves, int queenIndex) {
 		int xArrow = 1;
 		int yArrow = 1;
+		int [] queenXY = new int[2];
 
-		for (int i = 0; i < tempMoves.size(); i++) {
-			int[] array = tempMoves.get(i);
-			queenXY = indexToYX(array[1]);
+		for (int i = 0; i < moves.size(); i++) {
+			queenXY = indexToYX(queenIndex);
 			for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
 			{
 				xArrow = queenXY[1];
@@ -211,10 +186,10 @@ public class GameState
 					}
 					
 					if(xArrow < 1 || yArrow < 1 || xArrow > 10 || yArrow > 10) break;
-					tempIndex = yxToIndex(yArrow, xArrow);
+					int tempIndex = yxToIndex(yArrow, xArrow);
 	
 					if (this.board[tempIndex] == 0 || tempIndex == array[0]) {
-						Move move = new Move(array[0], array[1], tempIndex); //these are in index notation
+						Move move = new Move(queenIndex, moves.get(i), tempIndex); //these are in index notation
 						output.add(move);
 					}
 					else
@@ -222,7 +197,39 @@ public class GameState
 				}	
 			}
 		}
+		return output;
+	}
+
+	public ArrayList<Move> getMoves()
+	{
+		ArrayList<Move> output = new ArrayList<Move>();
+		//look at the Move class to see what the Move object is,
+		//it's just the three components in index notation
 		
+		ArrayList<Integer> queens = new ArrayList<Integer>();
+		
+		//set which queen symbol we are looking for
+		int queenTarget = 0;
+		if(this.whiteTurn) queenTarget = 1;
+		else queenTarget = -1;
+		
+		for(int i = 0; i < this.board.length; i++)
+		{
+			//add the index of the queens we care about
+			if(board[i] == queenTarget) queens.add(i);
+		}
+		
+		//one helpful thing
+		//if(board[index] != 0) ---> if this condition is true there is something that blocks vision (shot tile, or another queen)
+		
+		//for each queen figure out every tile they can move to in all 8 directions
+		ArrayList<Integer> possibleQueenMoves = new ArrayList<>(); //holds moves the queen can move to
+
+		// loop through each queen
+		for (int i = 0; i < queens.size(); i++) {
+			possibleQueenMoves = queenMoves(queens.get(i));
+			output.addAll(arrowMoves(possibleQueenMoves, queens.get(i)));
+		}
 		
 		/*
 		try 
@@ -293,7 +300,74 @@ public class GameState
 	//you'll  basically have to check each square once for white and once for black
 	private int territoryHeuristic()
 	{
-		return 0; //0 if it is even
+		// array lists holding locations of queens
+		ArrayList<Integer> blackQueens = new ArrayList<>();
+		ArrayList<Integer> whiteQueens = new ArrayList<>();
+		ArrayList<Move> possibleMoves = new ArrayList<>();
+		int dWhite = 10;
+		int dBlack = 10; 
+		int territorySum = 0;
+
+		// find queen locations
+		for (int i = 0; i < this.board.length; i++) {
+			if(this.board[i] == -1)
+				blackQueens.add(i);
+			else if (this.board[i] == 1)
+				whiteQueens.add(i);
+		}
+		// loop through each cell and find queen closest to the empty cell
+		// also finds how close
+		for (int i = 0; i < this.board.length; i++) {
+			if (this.board[i] == 0) {
+				for (int j; j < 4; j++) { // loops through each queen 
+					int counter = 0;
+					do { // white queens
+						possibleMoves = queenMoves(whiteQueens.get(j));
+						counter++;
+						if (counter >= 10) // break point for infinity
+							break;
+					} while (!possibleMoves.contains(this.board[i]));
+					if (dWhite > counter)
+						dWhite = counter;
+					do { // black queens
+						possibleMoves = queenMoves(blackQueens.get(j));
+						counter++;
+						if (counter >= 10) // break point for infinity
+							break;
+					} while (!possibleMoves.contains(this.board[i]));
+					if (dBlack > counter)
+						dBlack = counter;
+				}
+			}
+			// send lowest number of turns for both colours to the evaluation function
+			territorySum += territoryEvaluation(dWhite, dBlack); // call for territory function
+			// territorySum += relTerritoryEvaluation(dWhite, dBlack); // call for relative territory function
+		}
+		return territorySum; //0 if it is even
+	}
+
+	// evaluates how many tiles the player can reach before the other player
+	private int territoryEvaluation(int n, int m) {
+		if (n == 10 && m == 10)
+			return 0;
+		else if (n == m)
+			return 1/5;
+		else if (n < m)
+			return 1;
+		else
+			return -1;
+	}
+
+	// evaluates based on difference between turns it would take for players
+	private int relTerritoryEvaluation(int n, int m) {
+		if (m == 10 && n < 10)
+			return 5;
+		else if (n == 10 && m < 10)
+			return -5;
+		else if (n == 10 && m == 10)
+			return 0;
+		else
+			return m - n;
 	}
 	
 	public void printBoard()

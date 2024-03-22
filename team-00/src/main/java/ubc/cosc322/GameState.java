@@ -84,7 +84,7 @@ public class GameState
 		return newState;
 	}
 	
-	public ArrayList<int[]> queenMoves(int queenXY) {
+	public ArrayList<Integer> queenMoves(int queenXY) {
 		int[] array = new int [2];
 		ArrayList<Integer> tempMoves = new ArrayList<>();
 		int xQueen = 0;
@@ -146,6 +146,7 @@ public class GameState
 		int xArrow = 1;
 		int yArrow = 1;
 		int [] queenXY = new int[2];
+		ArrayList<Move> output = new ArrayList<Move>();
 
 		for (int i = 0; i < moves.size(); i++) {
 			queenXY = indexToYX(queenIndex);

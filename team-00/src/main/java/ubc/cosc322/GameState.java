@@ -189,7 +189,7 @@ public class GameState
 					if(xArrow < 1 || yArrow < 1 || xArrow > 10 || yArrow > 10) break;
 					int tempIndex = yxToIndex(yArrow, xArrow);
 	
-					if (this.board[tempIndex] == 0 || tempIndex == array[0]) {
+					if (this.board[tempIndex] == 0 || tempIndex == queenXY[0]) {
 						Move move = new Move(queenIndex, moves.get(i), tempIndex); //these are in index notation
 						output.add(move);
 					}
@@ -299,12 +299,12 @@ public class GameState
 	//refer to that one super helpful paper we keep referencing to see the logic/definition of this
 	//use this.board as the board you're running on
 	//you'll  basically have to check each square once for white and once for black
-	private int territoryHeuristic()
+	public int territoryHeuristic()
 	{
 		// array lists holding locations of queens
 		ArrayList<Integer> blackQueens = new ArrayList<>();
 		ArrayList<Integer> whiteQueens = new ArrayList<>();
-		ArrayList<Move> possibleMoves = new ArrayList<>();
+		ArrayList<Integer> possibleMoves = new ArrayList<>();
 		int dWhite = 10;
 		int dBlack = 10; 
 		int territorySum = 0;
@@ -320,7 +320,7 @@ public class GameState
 		// also finds how close
 		for (int i = 0; i < this.board.length; i++) {
 			if (this.board[i] == 0) {
-				for (int j; j < 4; j++) { // loops through each queen 
+				for (int j = 0; j < 4; j++) { // loops through each queen 
 					int counter = 0;
 					do { // white queens
 						possibleMoves = queenMoves(whiteQueens.get(j));
@@ -341,8 +341,10 @@ public class GameState
 				}
 			}
 			// send lowest number of turns for both colours to the evaluation function
-			territorySum += territoryEvaluation(dWhite, dBlack); // call for territory function
-			// territorySum += relTerritoryEvaluation(dWhite, dBlack); // call for relative territory function
+			//territorySum += territoryEvaluation(dWhite, dBlack); // call for territory function
+			int delta = relTerritoryEvaluation(dWhite, dBlack);
+			System.out.println("Changing territorySum by: " + delta);
+			territorySum += delta;// call for relative territory function
 		}
 		return territorySum; //0 if it is even
 	}
@@ -352,7 +354,7 @@ public class GameState
 		if (n == 10 && m == 10)
 			return 0;
 		else if (n == m)
-			return 1/5;
+			return 1/5; //this is always going to be 0 (int) 1/5 === 0
 		else if (n < m)
 			return 1;
 		else
@@ -373,7 +375,7 @@ public class GameState
 	
 	public void printBoard()
 	{
-		for(int y = 1; y <= 10; y++)
+		for(int y = 10; y >= 1; y--)
 		{
 			for(int x = 1; x <= 10; x++)
 			{
@@ -386,6 +388,24 @@ public class GameState
 		
 		System.out.println("");
 		System.out.println("----------------");
+	}
+	
+	public String toString()
+	{
+		StringBuilder output = new StringBuilder();
+		for(int y = 10; y >= 1; y--)
+		{
+			for(int x = 1; x <= 10; x++)
+			{
+				output.append(board[GameState.yxToIndex(y, x)] + " ");
+			}
+			
+			output.append("\n");
+		}
+		output.append("\n");
+		output.append("----------------\n");
+		
+		return output.toString();
 	}
 	
 	

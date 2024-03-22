@@ -37,9 +37,76 @@ public class COSC322Test extends GamePlayer{
      * The main method
      * @param args for name and passwd (current, any string would work)
      */
-    public static void main(String[] args) {				 
-    	COSC322Test player = new COSC322Test(args[0], args[1]);
-    	//HumanPlayer player = new HumanPlayer();
+    public static void main(String[] args) {		
+    	int[] board = new int[100];
+    	board[9] = -1;
+    	board[88] = -1;
+    	board[12] = -1;
+    	board[62] = -1;
+    	
+    	board[17] = 1;
+    	board[21] = 1;
+    	board[75] = 1;
+    	board[72] = 1;
+    	
+    	board[40] = -99;
+    	board[51] = -99;
+    	board[71] = -99;
+    	board[81] = -99;
+    	board[2] = -99;
+    	board[32] = -99;
+    	board[42] = -99;
+    	board[52] = -99;
+    	board[13] = -99;
+    	board[23] = -99;
+    	board[33] = -99;
+    	board[63] = -99;
+    	board[4] = -99;
+    	board[24] = -99;
+    	board[54] = -99;
+    	board[64] = -99;
+    	board[74] = -99;
+    	board[84] = -99;
+    	board[94] = -99;
+    	board[15] = -99;
+    	board[55] = -99;
+    	board[16] = -99;
+    	board[26] = -99;
+    	board[36] = -99;
+    	board[46] = -99;
+    	board[56] = -99;
+    	board[76] = -99;
+    	board[47] = -99;
+    	board[57] = -99;
+    	board[67] = -99;
+    	board[77] = -99;
+    	board[97] = -99;
+    	board[38] = -99;
+    	board[19] = -99;
+    	board[59] = -99;
+    	
+    	GameState test = new GameState(board, true);
+    	
+    	try 
+    	{
+	      FileWriter myWriter = new FileWriter("territory.txt");
+	      
+	      myWriter.write(test.toString());
+	      
+	      myWriter.write("Territory eval: " + test.territoryHeuristic());
+	    		  
+
+	      myWriter.close();
+	      System.out.println("Successfully wrote to the file.");
+	    } catch (IOException e) 
+	    {
+	      System.out.println("An error occurred.");
+	      e.printStackTrace();
+	    }
+    	
+    	//COSC322Test player = new COSC322Test(args[0], args[1]);
+    	HumanPlayer player = new HumanPlayer();
+    	
     	
     	if(player.getGameGUI() == null) {
     		player.Go();
@@ -64,7 +131,7 @@ public class COSC322Test extends GamePlayer{
     	GameNode root = new GameNode();
     	this.tree = new GameTree(root);
     	
-    	benchmark();
+    	//benchmark();
     	
     	//run as many playouts right now as we can get away with
     	//int initialPlayouts = 200000;

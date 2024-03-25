@@ -204,6 +204,7 @@ public class COSC322Test extends GamePlayer{
 		
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState); //this is fake
+		this.tree.nodes.remove(this.tree.getRoot());
 		this.tree.setRoot(tree.nodes.get(newRoot));
 	}
 	

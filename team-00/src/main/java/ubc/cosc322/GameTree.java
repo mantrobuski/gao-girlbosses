@@ -10,7 +10,7 @@ public class GameTree
 	//this is a table where key == value, this is because you can get from the table by object
 	//hashset does not have this property
 	//doing this because we have ovverride the equals of GameNode to only look at the state of the board and to ignore the parents and children when comparing because we do it in this class instead
-	Hashtable<GameNode, GameNode> nodes;
+	//Hashtable<GameNode, GameNode> nodes;
 	private GameNode root;
 	
 	private boolean white; //are we white or black, true for white
@@ -18,7 +18,7 @@ public class GameTree
 	public GameTree(GameNode root)
 	{
 		this.root = root;
-		nodes = new Hashtable<GameNode, GameNode>(); 
+		//nodes = new Hashtable<GameNode, GameNode>(); 
 	}
 	
 	public GameNode getRoot()
@@ -37,6 +37,7 @@ public class GameTree
 		node.addRoute(parent, move);
 		
 		//node is in the table already
+		/*
 		if(nodes.containsKey(node))
 		{
 			//marks the existing node as a child of the desired parent
@@ -44,10 +45,11 @@ public class GameTree
 			parent.children.add(existingNode);
 			return existingNode;
 		}
+		*/
 		
 		//we have to do the above juggling so that we don't reference the wrong node object if one already exists
 		parent.children.add(node);
-		nodes.put(node, node);
+		//nodes.put(node, node);
 		
 		return node;
 		

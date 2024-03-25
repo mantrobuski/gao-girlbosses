@@ -14,6 +14,7 @@ import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.GamePlayer;
+import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
 import ygraph.ai.smartfox.games.amazons.HumanPlayer;
 
 /**
@@ -64,11 +65,11 @@ public class COSC322Test extends GamePlayer{
     	GameNode root = new GameNode();
     	this.tree = new GameTree(root);
     	
-    	benchmark();
+    	//benchmark();
     	
     	//run as many playouts right now as we can get away with
-    	//int initialPlayouts = 200000;
-    	//this.tree.runPlayouts(root, initialPlayouts);
+    	int initialPlayouts = 2000;
+    	this.tree.runPlayouts(root, initialPlayouts);
     	
     	this.userName = userName;
     	this.passwd = passwd;
@@ -115,8 +116,15 @@ public class COSC322Test extends GamePlayer{
     	{
     		//this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get("game-state"));
     		System.out.println("Black: " +  (String)msgDetails.get("player-black") + " vs WHITE: " + (String)msgDetails.get("player-white"));
-    		this.initialize(false); //pass what colour we are.
-    		this.takeTurn(null);
+    		System.out.println("recieved opponent move");
+    		this.getGameGUI().updateGameState(msgDetails);
+    		ArrayList<Integer> qCur = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
+    		ArrayList<Integer> qMove = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
+    		ArrayList<Integer> arrow = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS);
+    		
+    		Move opMove = new Move(GameState.yxToIndex(qCur.get(0), qCur.get(1)), GameState.yxToIndex(qMove.get(0), qMove.get(1)), GameState.yxToIndex(arrow.get(0), arrow.get(1)));
+    		opponentTurn(opMove);
+    		takeTurn();
     	}
     	
     	else if(messageType.equals(GameMessage.GAME_ACTION_MOVE))
@@ -188,7 +196,7 @@ public class COSC322Test extends GamePlayer{
     	gameClient = new GameClient(userName, passwd, this);			
 	}
 	
-	public void takeTurn(ArrayList<Integer> state)
+	public void takeTurn()
 	{
 		//rn this is a skeleton
 		//decideMove(state) //heuristic function makes a decision and returns an object
@@ -201,10 +209,10 @@ public class COSC322Test extends GamePlayer{
 		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
 		
 		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
-		
+		this.getGameGUI().updateGameState(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState); //this is fake
-		this.tree.setRoot(tree.nodes.get(newRoot));
+		this.tree.setRoot(newRoot);
 	}
 	
 	public void opponentTurn(Move move)
@@ -237,7 +245,7 @@ public class COSC322Test extends GamePlayer{
 	      FileWriter myWriter = new FileWriter("bench.txt");
 	      
 	      long start = System.currentTimeMillis();
-	      int playouts = 10000000;
+	      int playouts = 1000;
 	      
 	      //benchmark here
 	      this.tree.runPlayouts(this.tree.getRoot(), playouts);

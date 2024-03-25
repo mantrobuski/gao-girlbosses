@@ -148,6 +148,14 @@ public class COSC322Test extends GamePlayer{
     	//int initialPlayouts = 200000;
     	//this.tree.runPlayouts(root, initialPlayouts);
     	
+    	this.tree.popNode(root);
+    	for(GameNode node : root.children)
+    	{
+    		this.tree.popNode(node);
+    	}
+    	
+    	System.out.println("Setup complete");
+    	
     	this.userName = userName;
     	this.passwd = passwd;
     	
@@ -315,7 +323,7 @@ public class COSC322Test extends GamePlayer{
 	public Move getMove()
 	{
 		//this function will use heuristics to make a move [<x, y>, <x, y> <x,y>] queen to move, square move to, arrow shoot location
-		return tree.iterativeDeepeningAlphaBeta(2);
+		return tree.iterativeDeepeningAlphaBeta(1);
 	}
 	
 	//true if we are white, false if we are black

@@ -31,6 +31,18 @@ public class GameTree
 		this.root = node;
 	}
 	
+	public void popNode(GameNode node)
+	{
+		ArrayList<Move> moves = node.state.getMoves();
+		for(Move move : moves)
+		{
+			GameState newState = node.state.makeMove(move);
+			GameNode newNode = new GameNode(newState);
+			
+			this.addNode(newNode, node, move);
+		}
+	}
+	
 	//returns the node that was just added (or the existing one)
 	public GameNode addNode(GameNode node, GameNode parent, Move move)
 	{

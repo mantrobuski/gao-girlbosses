@@ -203,7 +203,7 @@ public class COSC322Test extends GamePlayer{
 		//(queen x,y move to x,y  shoot arrow, x,y queenToMove.x, queenMove.x, arrow.x
 		
 		//MAKE AS MANY PLAYOUTS AS POSSIBLE
-		
+		this.tree.runPlayouts(this.tree.getRoot(), 1000);
 		Move move = getMove();
 		
 		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE

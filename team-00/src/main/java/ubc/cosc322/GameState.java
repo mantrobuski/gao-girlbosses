@@ -152,7 +152,7 @@ public class GameState
 		ArrayList<Move> output = new ArrayList<Move>();
 
 		for (int i = 0; i < moves.size(); i++) {
-			queenXY = indexToYX(queenIndex);
+			queenXY = indexToYX(moves.get(i));
 			for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
 			{
 				xArrow = queenXY[1];

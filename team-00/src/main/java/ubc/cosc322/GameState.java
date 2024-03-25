@@ -469,9 +469,9 @@ public class GameState
 	// evaluates based on difference between turns it would take for players
 	private int relTerritoryEvaluation(int n, int m) {
 		if (m == 10 && n < 10)
-			return 5;
+			return 10;
 		else if (n == 10 && m < 10)
-			return -5;
+			return -10;
 		else if (n == 10 && m == 10) {
 			return 0;
 		}

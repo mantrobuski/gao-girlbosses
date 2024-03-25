@@ -340,8 +340,8 @@ public class GameState
 						if(move < 0) continue;
 						ArrayList<Integer> foundMoves = findQueen(move);
 						int[] temp = new int[2];
-						temp[0] = foundMoves.get(foundMoves.size() - 1);
-						temp[1] = foundMoves.get(foundMoves.size() - 2);
+						if(foundMoves.size() >= 1)temp[0] = foundMoves.get(foundMoves.size() - 1);
+						if(foundMoves.size() >= 2)temp[1] = foundMoves.get(foundMoves.size() - 2);
 						//System.out.println(temp[0] + ", " + temp[1]);
 						//white quene
 						if(IntStream.of(temp).anyMatch(x -> x == -1000) && whiteDepth == 0) whiteDepth = depth + 1;

@@ -31,7 +31,8 @@ public class COSC322Test extends GamePlayer{
     private String passwd = null;
     
     private GameTree tree;
- 
+    private SearchTimer Timer;
+    
 	
     /**
      * The main method
@@ -64,10 +65,12 @@ public class COSC322Test extends GamePlayer{
     	GameNode root = new GameNode();
     	this.tree = new GameTree(root);
     	
+    	this.Timer= new SearchTimer(this.tree);
+    	
     	benchmark();
     	
     	//run as many playouts right now as we can get away with
-    	//int initialPlayouts = 200000;
+    	//int initialPlayouts = 10000;
     	//this.tree.runPlayouts(root, initialPlayouts);
     	
     	this.userName = userName;
@@ -190,6 +193,7 @@ public class COSC322Test extends GamePlayer{
 	
 	public void takeTurn(ArrayList<Integer> state)
 	{
+		Timer.startSearching();
 		//rn this is a skeleton
 		//decideMove(state) //heuristic function makes a decision and returns an object
 		//(queen x,y move to x,y  shoot arrow, x,y queenToMove.x, queenMove.x, arrow.x
@@ -197,6 +201,10 @@ public class COSC322Test extends GamePlayer{
 		//MAKE AS MANY PLAYOUTS AS POSSIBLE
 		
 		Move move = getMove();
+		
+		Timer.timerCancel();
+			
+			// execute a different task!
 		
 		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
 		
@@ -237,7 +245,7 @@ public class COSC322Test extends GamePlayer{
 	      FileWriter myWriter = new FileWriter("bench.txt");
 	      
 	      long start = System.currentTimeMillis();
-	      int playouts = 10000000;
+	      int playouts = 2000;
 	      
 	      //benchmark here
 	      this.tree.runPlayouts(this.tree.getRoot(), playouts);

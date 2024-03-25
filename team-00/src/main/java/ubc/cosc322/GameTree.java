@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameTree 
 {
@@ -14,7 +16,10 @@ public class GameTree
 	private GameNode root;
 	
 	boolean white; //are we white or black, true for white
-	
+
+	public boolean timerInterrupt = false;
+	private boolean white; //are we white or black, true for white
+
 	public GameTree(GameNode root)
 	{
 		this.root = root;
@@ -180,7 +185,7 @@ public class GameTree
 	
 	public Move iterativeDeepeningAlphaBeta(int maxDepth)
 	{
-
+		
 		Move solution = null;
 		
 		for (int depth = 1; depth <= maxDepth; depth++) {
@@ -198,10 +203,10 @@ public class GameTree
 			
 			
 			// TODO: Elana's Timer
-			// if (timerInterupt) {
-			//		break;
-			// }
-			//
+			if (this.timerInterrupt) {
+					return result.move;
+			 }
+			
 			}
 		
 		if(solution == null)
@@ -284,6 +289,11 @@ public class GameTree
 	            beta = Math.min(beta, bestVal);
 			}
 			
+			//bail early if we're out of time
+			if (this.timerInterrupt) {
+				return new MoveVal(bestMove, bestVal);
+			}
+			
 			// Alpha Beta Pruning
             if (beta <= alpha)
                 break;
@@ -293,5 +303,7 @@ public class GameTree
 		
 		return new MoveVal(bestMove, bestVal);
 	}
-
 }
+
+
+

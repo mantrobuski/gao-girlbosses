@@ -38,7 +38,9 @@ public class COSC322Test extends GamePlayer{
     private int depth = 1;
 	private ArrayList<Move> possibleOpponentMoves = new ArrayList<Move>();
  
-	
+    private SearchTimer Timer;
+    
+
     /**
      * The main method
      * @param args for name and passwd (current, any string would work)
@@ -154,12 +156,7 @@ public class COSC322Test extends GamePlayer{
     	
     	GameNode root = new GameNode();
     	this.tree = new GameTree(root);
-    	
-    	//benchmark();
-    	
-    	//run as many playouts right now as we can get away with
-    	//int initialPlayouts = 200000;
-    	//this.tree.runPlayouts(root, initialPlayouts);
+    	this.Timer = new SearchTimer(this.tree);
     	
     	this.tree.popNode(root);
     	for(GameNode node : root.children)
@@ -314,15 +311,16 @@ public class COSC322Test extends GamePlayer{
 	public void takeTurn()
 	{
 		turnCount++;
-		//rn this is a skeleton
+
+		Timer.startSearching();
 		//decideMove(state) //heuristic function makes a decision and returns an object
 		//(queen x,y move to x,y  shoot arrow, x,y queenToMove.x, queenMove.x, arrow.x
 		
-		//MAKE AS MANY PLAYOUTS AS POSSIBLE
 		long startTime = System.currentTimeMillis();
 		
 		Move move = getMove();
-		
+		Timer.timerCancel();
+
 		long endTime = System.currentTimeMillis();
 		System.out.println("Got move in " + (endTime - startTime) + "ms");
 		
@@ -339,6 +337,7 @@ public class COSC322Test extends GamePlayer{
 
 		possibleOpponentMoves = this.tree.getRoot().state.getMoves();
 		if(possibleOpponentMoves != null) System.out.println("Possible Opponent Moves: " + possibleOpponentMoves.size());
+		
 		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
 		
 		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
@@ -411,7 +410,7 @@ public class COSC322Test extends GamePlayer{
 	      FileWriter myWriter = new FileWriter("bench.txt");
 	      
 	      long start = System.currentTimeMillis();
-	      int playouts = 10000000;
+	      int playouts = 2000;
 	      
 	      //benchmark here
 	      this.tree.runPlayouts(this.tree.getRoot(), playouts);

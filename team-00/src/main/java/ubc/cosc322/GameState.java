@@ -4,6 +4,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.stream.IntStream;
 
 public class GameState 
 {
@@ -304,10 +307,9 @@ public class GameState
 		// array lists holding locations of queens
 		ArrayList<Integer> blackQueens = new ArrayList<>();
 		ArrayList<Integer> whiteQueens = new ArrayList<>();
-		ArrayList<Integer> possibleMoves = new ArrayList<>();
-		int dWhite = 10;
-		int dBlack = 10; 
+		
 		int territorySum = 0;
+		int counter = 0;
 
 		// find queen locations
 		for (int i = 0; i < this.board.length; i++) {
@@ -318,35 +320,138 @@ public class GameState
 		}
 		// loop through each cell and find queen closest to the empty cell
 		// also finds how close
+		HashMap<Integer, ArrayList<Integer>> stupidMap = new HashMap<Integer, ArrayList<Integer>>();
 		for (int i = 0; i < this.board.length; i++) {
 			if (this.board[i] == 0) {
-				for (int j = 0; j < 4; j++) { // loops through each queen 
-					int counter = 0;
-					do { // white queens
-						possibleMoves = queenMoves(whiteQueens.get(j));
-						counter++;
-						if (counter >= 10) // break point for infinity
-							break;
-					} while (!possibleMoves.contains(this.board[i]));
-					if (dWhite > counter)
-						dWhite = counter;
-					do { // black queens
-						possibleMoves = queenMoves(blackQueens.get(j));
-						counter++;
-						if (counter >= 10) // break point for infinity
-							break;
-					} while (!possibleMoves.contains(this.board[i]));
-					if (dBlack > counter)
-						dBlack = counter;
+				int whiteDepth = 0;
+				int blackDepth = 0;
+				
+				ArrayList<Integer> first = new ArrayList<Integer>();
+				first.add(i);
+				stupidMap.put(0,  first);
+				HashSet<Integer> visited = new HashSet<Integer>();
+				int depth = 0;
+				int maxDepth = 10;
+				while(depth <= maxDepth)
+				{
+					ArrayList<Integer> possibleMoves = new ArrayList<>(); 
+					ArrayList<Integer> moves = stupidMap.get(depth);
+					for(int move : moves) {
+						if(move < 0) continue;
+						ArrayList<Integer> foundMoves = findQueen(move);
+						int[] temp = new int[2];
+						temp[0] = foundMoves.get(foundMoves.size() - 1);
+						temp[1] = foundMoves.get(foundMoves.size() - 2);
+						//System.out.println(temp[0] + ", " + temp[1]);
+						//white quene
+						if(IntStream.of(temp).anyMatch(x -> x == -1000) && whiteDepth == 0) whiteDepth = depth + 1;
+							
+						//black
+						if(IntStream.of(temp).anyMatch(x -> x == -1001) && blackDepth == 0) blackDepth = depth + 1;
+						if(whiteDepth != 0 && blackDepth != 0) break; //break if found both
+						
+						for(int newMove : foundMoves)
+						{
+							if(visited.add(newMove))
+							{
+								possibleMoves.add(newMove); 	
+							}
+						}
+					}
+					
+					
+					
+					
+					if(whiteDepth != 0 && blackDepth != 0) break;
+					
+					
+					
+					stupidMap.put(depth + 1, possibleMoves);
+					depth ++;
 				}
+				if(whiteDepth == 0) whiteDepth = maxDepth;
+				if(blackDepth == 0) blackDepth = maxDepth;
+				stupidMap = new HashMap<Integer, ArrayList<Integer>>();
+				//System.out.println("whitedpeth: " + whiteDepth + ", blacck: " + blackDepth);
+				territorySum += relTerritoryEvaluation(whiteDepth, blackDepth);
 			}
-			// send lowest number of turns for both colours to the evaluation function
-			//territorySum += territoryEvaluation(dWhite, dBlack); // call for territory function
-			int delta = relTerritoryEvaluation(dWhite, dBlack);
-			System.out.println("Changing territorySum by: " + delta);
-			territorySum += delta;// call for relative territory function
 		}
+		//System.out.println("Territory Sum: " + territorySum);
 		return territorySum; //0 if it is even
+	}
+	
+	public ArrayList<Integer> findQueen(int queenXY) {
+		int[] array = new int [2];
+		ArrayList<Integer> tempMoves = new ArrayList<>();
+		int xQueen = 0;
+		int yQueen = 0;
+		int tempIndex = 0;
+		boolean foundWhite = false;
+		boolean foundBlack = false;
+		
+		array = indexToYX(queenXY);
+		for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
+		{
+			xQueen = array[1]; //temporary x and y positions. don't want to overwrite initial for next direction 
+			yQueen = array[0];
+			while ((xQueen > 0 && xQueen <= 10) && (yQueen > 0 && yQueen <= 10)) { // while loop for positions within the board
+				switch (j) {
+					case 0: // UP
+						yQueen++;
+						break;
+					case 1: // UP-RIGHT
+						xQueen++;
+						yQueen++;
+						break;
+					case 2: // RIGHT
+						xQueen++;
+						break;
+					case 3: // RIGHT-DOWN
+						xQueen++;
+						yQueen--;
+						break;
+					case 4: // DOWN
+						yQueen--;
+						break;
+					case 5: // DOWN-LEFT
+						yQueen--;
+						xQueen--;
+						break;
+					case 6: // LEFT
+						xQueen--;
+						break;
+					case 7: // UP-LEFT
+						xQueen--;
+						yQueen++;
+						break;
+				}
+					
+				if(xQueen < 1 || yQueen < 1 || xQueen > 10 || yQueen > 10) break;
+				tempIndex = yxToIndex(yQueen, xQueen);
+
+				//System.out.println("x:" + xQueen + ", y: " + yQueen);
+				if (this.board[tempIndex] == 0) { // SLOW fix later
+					tempMoves.add(tempIndex);
+				}
+				else if(this.board[tempIndex] == 1) {
+					//white queen
+					foundWhite = true;
+					break;
+				}
+				else if(this.board[tempIndex] == -1) {
+					//white queen
+					foundBlack = true;
+					break;
+				}
+				
+				else
+					break;
+			}	
+		}
+		if(foundWhite) tempMoves.add(-1000);
+		if(foundBlack) tempMoves.add(-1001);
+		
+		return tempMoves;
 	}
 
 	// evaluates how many tiles the player can reach before the other player
@@ -367,10 +472,11 @@ public class GameState
 			return 5;
 		else if (n == 10 && m < 10)
 			return -5;
-		else if (n == 10 && m == 10)
+		else if (n == 10 && m == 10) {
 			return 0;
+		}
 		else
-			return m - n;
+			return (m - n);
 	}
 	
 	public void printBoard()

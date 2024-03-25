@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import sfs2x.client.entities.Room;
 import ygraph.ai.smartfox.games.BaseGameGUI;
@@ -32,6 +33,8 @@ public class COSC322Test extends GamePlayer{
     private String passwd = null;
     
     private GameTree tree;
+    
+    private int turnCount = 0;
  
 	
     /**
@@ -171,7 +174,7 @@ public class COSC322Test extends GamePlayer{
     	
     	List<Room> rooms = gameClient.getRoomList();
     	
-    	gameClient.joinRoom("Kalamalka Lake");
+    	gameClient.joinRoom("Echo Lake");
     	
     	
     	userName = gameClient.getUserName();
@@ -293,6 +296,7 @@ public class COSC322Test extends GamePlayer{
 	
 	public void takeTurn()
 	{
+		turnCount++;
 		//rn this is a skeleton
 		//decideMove(state) //heuristic function makes a decision and returns an object
 		//(queen x,y move to x,y  shoot arrow, x,y queenToMove.x, queenMove.x, arrow.x
@@ -322,6 +326,20 @@ public class COSC322Test extends GamePlayer{
 	
 	public Move getMove()
 	{
+		//random move first turn
+		if(this.tree.white && this.turnCount == 1)
+		{
+			ArrayList<Move> moves = this.tree.getRoot().state.getMoves();
+			 if(moves.size() == 0) System.out.println("WE LOSE");
+			 else
+			 {
+				 return moves.get(new Random().nextInt(moves.size()));
+			 }
+		}
+		
+		if(this.turnCount > 25) return tree.iterativeDeepeningAlphaBeta(3);
+		else if(this.turnCount > 20) return tree.iterativeDeepeningAlphaBeta(2);
+		
 		//this function will use heuristics to make a move [<x, y>, <x, y> <x,y>] queen to move, square move to, arrow shoot location
 		return tree.iterativeDeepeningAlphaBeta(1);
 	}

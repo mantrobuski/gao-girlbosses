@@ -13,7 +13,7 @@ public class GameTree
 	//Hashtable<GameNode, GameNode> nodes;
 	private GameNode root;
 	
-	private boolean white; //are we white or black, true for white
+	boolean white; //are we white or black, true for white
 	
 	public GameTree(GameNode root)
 	{
@@ -196,6 +196,7 @@ public class GameTree
 				solution = result.move; 
 				} 
 			
+			
 			// TODO: Elana's Timer
 			// if (timerInterupt) {
 			//		break;
@@ -203,7 +204,18 @@ public class GameTree
 			//
 			}
 		
-		if(solution == null) System.err.println("NO MOVES IN POSITION (according to minimax)");
+		if(solution == null)
+		{
+			 System.err.println("NO MOVES IN POSITION (according to minimax)");
+			 ArrayList<Move> moves = this.root.state.getMoves();
+			 if(moves == null) System.out.println("WE LOSE");
+			 else
+			 {
+				 solution = moves.get(new Random().nextInt(moves.size()));
+			 }
+		}
+		
+		
 		
 		return solution;
 	}
@@ -228,17 +240,21 @@ public class GameTree
 			
 			//populate them
 			ArrayList<Move> moves = node.state.getMoves();
-			for(Move move : moves)
+			if(moves != null)
 			{
-				//get resulting state from move
-				GameState result = node.state.makeMove(move);
-				
-				//create node using the state
-				GameNode newNode = new GameNode(result);
-				
-				//add it to the tree
-				this.addNode(newNode, node, move);
+				for(Move move : moves)
+				{
+					//get resulting state from move
+					GameState result = node.state.makeMove(move);
+					
+					//create node using the state
+					GameNode newNode = new GameNode(result);
+					
+					//add it to the tree
+					this.addNode(newNode, node, move);
+				}
 			}
+			
 		}
 		
 		//if children is STILL empty, this node is a terminal node, evaluate will give +- infinity depending on who wins

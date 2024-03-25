@@ -4,6 +4,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.stream.IntStream;
 
 public class GameState 
 {
@@ -84,96 +87,72 @@ public class GameState
 		return newState;
 	}
 	
-	public ArrayList<Move> getMoves()
-	{
-		ArrayList<Move> output = new ArrayList<Move>();
-		//look at the Move class to see what the Move object is,
-		//it's just the three components in index notation
-		
-		ArrayList<Integer> queens = new ArrayList<Integer>();
-		
-		//set which queen symbol we are looking for
-		int queenTarget = 0;
-		if(this.whiteTurn) queenTarget = 1;
-		else queenTarget = -1;
-		
-		for(int i = 0; i < this.board.length; i++)
-		{
-			//add the index of the queens we care about
-			if(board[i] == queenTarget) queens.add(i);
-		}
-		
-		//one helpful thing
-		//if(board[index] != 0) ---> if this condition is true there is something that blocks vision (shot tile, or another queen)
-		
-		//for each queen figure out every tile they can move to in all 8 directions
-		int[] queenXY = new int [2]; //will hold xy index for queens
-		ArrayList<int[]> tempMoves = new ArrayList<>(); //holds moves the queen can move to
+	public ArrayList<Integer> queenMoves(int queenXY) {
+		int[] array = new int [2];
+		ArrayList<Integer> tempMoves = new ArrayList<>();
 		int xQueen = 0;
 		int yQueen = 0;
 		int tempIndex = 0;
 		
-		// loop through each queen
-		for (int i = 0; i < queens.size(); i++) {
-			queenXY = indexToYX(queens.get(i));
-			for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
-			{
-				xQueen = queenXY[1]; //temporary x and y positions. don't want to overwrite initial for next direction 
-				yQueen = queenXY[0];
-				while ((xQueen > 0 && xQueen <= 10) && (yQueen > 0 && yQueen <= 10)) { // while loop for positions within the board
-					switch (j) {
-						case 0: // UP
-							yQueen++;
-							break;
-						case 1: // UP-RIGHT
-							xQueen++;
-							yQueen++;
-							break;
-						case 2: // RIGHT
-							xQueen++;
-							break;
-						case 3: // RIGHT-DOWN
-							xQueen++;
-							yQueen--;
-							break;
-						case 4: // DOWN
-							yQueen--;
-							break;
-						case 5: // DOWN-LEFT
-							yQueen--;
-							xQueen--;
-							break;
-						case 6: // LEFT
-							xQueen--;
-							break;
-						case 7: // UP-LEFT
-							xQueen--;
-							yQueen++;
-							break;
-					}
-					
-					if(xQueen < 1 || yQueen < 1 || xQueen > 10 || yQueen > 10) break;
-					tempIndex = yxToIndex(yQueen, xQueen);
-	
-					//System.out.println("x:" + xQueen + ", y: " + yQueen);
-					if (this.board[tempIndex] == 0) { // SLOW fix later
-						int[] array = {yxToIndex(queenXY[0], queenXY[1]), tempIndex};
-						tempMoves.add(array);
-					}
-					else
+		array = indexToYX(queenXY);
+		for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
+		{
+			xQueen = array[1]; //temporary x and y positions. don't want to overwrite initial for next direction 
+			yQueen = array[0];
+			while ((xQueen > 0 && xQueen <= 10) && (yQueen > 0 && yQueen <= 10)) { // while loop for positions within the board
+				switch (j) {
+					case 0: // UP
+						yQueen++;
 						break;
+					case 1: // UP-RIGHT
+						xQueen++;
+						yQueen++;
+						break;
+					case 2: // RIGHT
+						xQueen++;
+						break;
+					case 3: // RIGHT-DOWN
+						xQueen++;
+						yQueen--;
+						break;
+					case 4: // DOWN
+						yQueen--;
+						break;
+					case 5: // DOWN-LEFT
+						yQueen--;
+						xQueen--;
+						break;
+					case 6: // LEFT
+						xQueen--;
+						break;
+					case 7: // UP-LEFT
+						xQueen--;
+						yQueen++;
+						break;
+				}
+					
+				if(xQueen < 1 || yQueen < 1 || xQueen > 10 || yQueen > 10) break;
+				tempIndex = yxToIndex(yQueen, xQueen);
 
-				}	
-			}
+				//System.out.println("x:" + xQueen + ", y: " + yQueen);
+				if (this.board[tempIndex] == 0) { // SLOW fix later
+					tempMoves.add(tempIndex);
+				}
+				else
+					break;
+			}	
 		}
+		return tempMoves;
+	}
 
-		//do same as above but for arrows with all moves in tempMoves
+	public ArrayList<Move> arrowMoves(ArrayList<Integer> moves, int queenIndex) {
 		int xArrow = 1;
 		int yArrow = 1;
+		int [] queenXY = new int[2];
+		ArrayList<Move> output = new ArrayList<Move>();
 
-		for (int i = 0; i < tempMoves.size(); i++) {
-			int[] array = tempMoves.get(i);
-			queenXY = indexToYX(array[1]);
+		for (int i = 0; i < moves.size(); i++) {
+			queenXY = indexToYX(queenIndex);
 			for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
 			{
 				xArrow = queenXY[1];
@@ -211,10 +190,10 @@ public class GameState
 					}
 					
 					if(xArrow < 1 || yArrow < 1 || xArrow > 10 || yArrow > 10) break;
-					tempIndex = yxToIndex(yArrow, xArrow);
+					int tempIndex = yxToIndex(yArrow, xArrow);
 	
-					if (this.board[tempIndex] == 0 || tempIndex == array[0]) {
-						Move move = new Move(array[0], array[1], tempIndex); //these are in index notation
+					if (this.board[tempIndex] == 0 || tempIndex == queenXY[0]) {
+						Move move = new Move(queenIndex, moves.get(i), tempIndex); //these are in index notation
 						output.add(move);
 					}
 					else
@@ -222,7 +201,39 @@ public class GameState
 				}	
 			}
 		}
+		return output;
+	}
+
+	public ArrayList<Move> getMoves()
+	{
+		ArrayList<Move> output = new ArrayList<Move>();
+		//look at the Move class to see what the Move object is,
+		//it's just the three components in index notation
 		
+		ArrayList<Integer> queens = new ArrayList<Integer>();
+		
+		//set which queen symbol we are looking for
+		int queenTarget = 0;
+		if(this.whiteTurn) queenTarget = 1;
+		else queenTarget = -1;
+		
+		for(int i = 0; i < this.board.length; i++)
+		{
+			//add the index of the queens we care about
+			if(board[i] == queenTarget) queens.add(i);
+		}
+		
+		//one helpful thing
+		//if(board[index] != 0) ---> if this condition is true there is something that blocks vision (shot tile, or another queen)
+		
+		//for each queen figure out every tile they can move to in all 8 directions
+		ArrayList<Integer> possibleQueenMoves = new ArrayList<>(); //holds moves the queen can move to
+
+		// loop through each queen
+		for (int i = 0; i < queens.size(); i++) {
+			possibleQueenMoves = queenMoves(queens.get(i));
+			output.addAll(arrowMoves(possibleQueenMoves, queens.get(i)));
+		}
 		
 		/*
 		try 
@@ -286,153 +297,191 @@ public class GameState
 		return this.val;
 	}
 	
-	
-	private int territoryHeuristic()
+	//it should return a positive value if white has more territory
+	//negative for black havnig more territory
+	//refer to that one super helpful paper we keep referencing to see the logic/definition of this
+	//use this.board as the board you're running on
+	//you'll  basically have to check each square once for white and once for black
+	public int territoryHeuristic()
 	{
-		//we are going to count the total number of tiles each queen sees, black counts for negative
-		int territory = 0;
+		// array lists holding locations of queens
+		ArrayList<Integer> blackQueens = new ArrayList<>();
+		ArrayList<Integer> whiteQueens = new ArrayList<>();
 		
-		//create two array lists containing the location of each queen (index notation)
-		ArrayList<Integer> whiteQueens = new ArrayList<Integer>();
-		ArrayList<Integer> blackQueens = new ArrayList<Integer>();
-		for(int i = 0; i < this.board.length; i++)
-		{
-			//add the index of the queens we care about
-			if(board[i] == 1) whiteQueens.add(i);
-			if(board[i] == -1) blackQueens.add(i);
+		int territorySum = 0;
+		int counter = 0;
+
+		// find queen locations
+		for (int i = 0; i < this.board.length; i++) {
+			if(this.board[i] == -1)
+				blackQueens.add(i);
+			else if (this.board[i] == 1)
+				whiteQueens.add(i);
 		}
-		
-		//for each white queen
-		for(int queen : whiteQueens)
-		{
-			//check 4 directions
-			
-			//up
-			int cursor = queen;
-			cursor++;
-			do
-			{
-				if(cursor > 99 || cursor < 0) break;
-				else if(board[cursor] == 0)
+		// loop through each cell and find queen closest to the empty cell
+		// also finds how close
+		HashMap<Integer, ArrayList<Integer>> stupidMap = new HashMap<Integer, ArrayList<Integer>>();
+		for (int i = 0; i < this.board.length; i++) {
+			if (this.board[i] == 0) {
+				int whiteDepth = 0;
+				int blackDepth = 0;
+				
+				ArrayList<Integer> first = new ArrayList<Integer>();
+				first.add(i);
+				stupidMap.put(0,  first);
+				HashSet<Integer> visited = new HashSet<Integer>();
+				int depth = 0;
+				int maxDepth = 10;
+				while(depth <= maxDepth)
 				{
-					territory += 1;
+					ArrayList<Integer> possibleMoves = new ArrayList<>(); 
+					ArrayList<Integer> moves = stupidMap.get(depth);
+					for(int move : moves) {
+						if(move < 0) continue;
+						ArrayList<Integer> foundMoves = findQueen(move);
+						int[] temp = new int[2];
+						temp[0] = foundMoves.get(foundMoves.size() - 1);
+						temp[1] = foundMoves.get(foundMoves.size() - 2);
+						//System.out.println(temp[0] + ", " + temp[1]);
+						//white quene
+						if(IntStream.of(temp).anyMatch(x -> x == -1000) && whiteDepth == 0) whiteDepth = depth + 1;
+							
+						//black
+						if(IntStream.of(temp).anyMatch(x -> x == -1001) && blackDepth == 0) blackDepth = depth + 1;
+						if(whiteDepth != 0 && blackDepth != 0) break; //break if found both
+						
+						for(int newMove : foundMoves)
+						{
+							if(visited.add(newMove))
+							{
+								possibleMoves.add(newMove); 	
+							}
+						}
+					}
+					
+					
+					
+					
+					if(whiteDepth != 0 && blackDepth != 0) break;
+					
+					
+					
+					stupidMap.put(depth + 1, possibleMoves);
+					depth ++;
 				}
-				else break;
-				cursor++;
-			}while(cursor % 10 != 0);
-			
-			//down
-			cursor = queen;
-			cursor--;
-			do
-			{
-				if(cursor > 99 || cursor < 0) break;
-				else if(board[cursor] == 0)
-				{
-					territory += 1;
-				}
-				else break;
-				cursor--;
-			}while(cursor % 10 != 9);
-			
-			//right
-			cursor = queen;
-			cursor += 10;
-			do
-			{
-				if(cursor > 99 || cursor < 0) break;
-				else if(board[cursor] == 0)
-				{
-					territory += 1;
-				}
-				else break;
-				cursor += 10;
-			}while(cursor >  9);
-			
-			//left
-			cursor = queen;
-			cursor -= 10;
-			do
-			{
-				if(cursor > 99 || cursor < 0) break;
-				else if(board[cursor] == 0)
-				{
-					territory += 1;
-				}
-				else break;
-				cursor -= 10;
-			}while(cursor < 90);
+				if(whiteDepth == 0) whiteDepth = maxDepth;
+				if(blackDepth == 0) blackDepth = maxDepth;
+				stupidMap = new HashMap<Integer, ArrayList<Integer>>();
+				//System.out.println("whitedpeth: " + whiteDepth + ", blacck: " + blackDepth);
+				territorySum += relTerritoryEvaluation(whiteDepth, blackDepth);
+			}
 		}
+		//System.out.println("Territory Sum: " + territorySum);
+		return territorySum; //0 if it is even
+	}
+	
+	public ArrayList<Integer> findQueen(int queenXY) {
+		int[] array = new int [2];
+		ArrayList<Integer> tempMoves = new ArrayList<>();
+		int xQueen = 0;
+		int yQueen = 0;
+		int tempIndex = 0;
+		boolean foundWhite = false;
+		boolean foundBlack = false;
 		
-		//for each black queen
-		for(int queen : blackQueens)
+		array = indexToYX(queenXY);
+		for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
 		{
-			//check 4 directions
-			
-			//up
-			int cursor = queen;
-			cursor++;
-			do
-			{
-				if(cursor > 99 || cursor < 0) break;
-				else if(board[cursor] == 0)
-				{
-					territory -= 1;
+			xQueen = array[1]; //temporary x and y positions. don't want to overwrite initial for next direction 
+			yQueen = array[0];
+			while ((xQueen > 0 && xQueen <= 10) && (yQueen > 0 && yQueen <= 10)) { // while loop for positions within the board
+				switch (j) {
+					case 0: // UP
+						yQueen++;
+						break;
+					case 1: // UP-RIGHT
+						xQueen++;
+						yQueen++;
+						break;
+					case 2: // RIGHT
+						xQueen++;
+						break;
+					case 3: // RIGHT-DOWN
+						xQueen++;
+						yQueen--;
+						break;
+					case 4: // DOWN
+						yQueen--;
+						break;
+					case 5: // DOWN-LEFT
+						yQueen--;
+						xQueen--;
+						break;
+					case 6: // LEFT
+						xQueen--;
+						break;
+					case 7: // UP-LEFT
+						xQueen--;
+						yQueen++;
+						break;
 				}
-				else break;
-				cursor++;
-			}while(cursor % 10 != 0);
-			
-			//down
-			cursor = queen;
-			cursor--;
-			do
-			{
-				if(cursor > 99 || cursor < 0) break;
-				else if(board[cursor] == 0)
-				{
-					territory -= 1;
+					
+				if(xQueen < 1 || yQueen < 1 || xQueen > 10 || yQueen > 10) break;
+				tempIndex = yxToIndex(yQueen, xQueen);
+
+				//System.out.println("x:" + xQueen + ", y: " + yQueen);
+				if (this.board[tempIndex] == 0) { // SLOW fix later
+					tempMoves.add(tempIndex);
 				}
-				else break;
-				cursor--;
-			}while(cursor % 10 != 9);
-			
-			//right
-			cursor = queen;
-			cursor += 10;
-			do
-			{
-				if(cursor > 99 || cursor < 0) break;
-				else if(board[cursor] == 0)
-				{
-					territory -= 1;
+				else if(this.board[tempIndex] == 1) {
+					//white queen
+					foundWhite = true;
+					break;
 				}
-				else break;
-				cursor += 10;
-			}while(cursor >  9);
-			
-			//left
-			cursor = queen;
-			cursor -= 10;
-			do
-			{
-				if(cursor > 99 || cursor < 0) break;
-				else if(board[cursor] == 0)
-				{
-					territory -= 1;
+				else if(this.board[tempIndex] == -1) {
+					//white queen
+					foundBlack = true;
+					break;
 				}
-				else break;
-				cursor -= 10;
-			}while(cursor < 90);
+				
+				else
+					break;
+			}	
 		}
+		if(foundWhite) tempMoves.add(-1000);
+		if(foundBlack) tempMoves.add(-1001);
 		
-		
-		return territory;
+		return tempMoves;
+	}
+
+	// evaluates how many tiles the player can reach before the other player
+	private int territoryEvaluation(int n, int m) {
+		if (n == 10 && m == 10)
+			return 0;
+		else if (n == m)
+			return 1/5; //this is always going to be 0 (int) 1/5 === 0
+		else if (n < m)
+			return 1;
+		else
+			return -1;
+	}
+
+	// evaluates based on difference between turns it would take for players
+	private int relTerritoryEvaluation(int n, int m) {
+		if (m == 10 && n < 10)
+			return 10;
+		else if (n == 10 && m < 10)
+			return -10;
+		else if (n == 10 && m == 10) {
+			return 0;
+		}
+		else
+			return (m - n);
 	}
 	
 	public void printBoard()
 	{
-		for(int y = 1; y <= 10; y++)
+		for(int y = 10; y >= 1; y--)
 		{
 			for(int x = 1; x <= 10; x++)
 			{
@@ -445,6 +494,24 @@ public class GameState
 		
 		System.out.println("");
 		System.out.println("----------------");
+	}
+	
+	public String toString()
+	{
+		StringBuilder output = new StringBuilder();
+		for(int y = 10; y >= 1; y--)
+		{
+			for(int x = 1; x <= 10; x++)
+			{
+				output.append(board[GameState.yxToIndex(y, x)] + " ");
+			}
+			
+			output.append("\n");
+		}
+		output.append("\n");
+		output.append("----------------\n");
+		
+		return output.toString();
 	}
 	
 	

@@ -38,7 +38,9 @@ public class COSC322Test extends GamePlayer{
      * The main method
      * @param args for name and passwd (current, any string would work)
      */
-    public static void main(String[] args) {		
+    public static void main(String[] args) {	
+    	
+    	/*
     	int[] board = new int[100];
     	board[9] = -1;
     	board[88] = -1;
@@ -104,6 +106,14 @@ public class COSC322Test extends GamePlayer{
 	      System.out.println("An error occurred.");
 	      e.printStackTrace();
 	    }
+    	
+    	GameNode root = new GameNode();
+    	GameTree testTree = new GameTree(root);
+    	testTree.setColour(false);
+    	
+    	testTree.iterativeDeepeningAlphaBeta(1);
+    	
+    	*/
     	
     	COSC322Test player = new COSC322Test(args[0], args[1]);
     	//HumanPlayer player = new HumanPlayer();
@@ -289,15 +299,15 @@ public class COSC322Test extends GamePlayer{
 		this.getGameGUI().updateGameState(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState); //this is fake
-		this.tree.nodes.remove(this.tree.getRoot());
-		this.tree.setRoot(tree.nodes.get(newRoot));
+		//this.tree.nodes.remove(this.tree.getRoot());
+		this.tree.setRoot(newRoot);
 	}
 	
 	public void opponentTurn(Move move)
 	{
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState);
-		this.tree.nodes.remove(this.tree.getRoot());
+		//this.tree.nodes.remove(this.tree.getRoot());
 		this.tree.addNode(newRoot, tree.getRoot(), move);
 		this.tree.setRoot(newRoot);
 	}

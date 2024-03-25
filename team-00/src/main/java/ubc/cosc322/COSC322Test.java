@@ -14,6 +14,7 @@ import ygraph.ai.smartfox.games.BaseGameGUI;
 import ygraph.ai.smartfox.games.GameClient;
 import ygraph.ai.smartfox.games.GameMessage;
 import ygraph.ai.smartfox.games.GamePlayer;
+import ygraph.ai.smartfox.games.amazons.AmazonsGameMessage;
 import ygraph.ai.smartfox.games.amazons.HumanPlayer;
 
 /**
@@ -64,7 +65,7 @@ public class COSC322Test extends GamePlayer{
     	GameNode root = new GameNode();
     	this.tree = new GameTree(root);
     	
-    	benchmark();
+    	//benchmark();
     	
     	//run as many playouts right now as we can get away with
     	//int initialPlayouts = 200000;
@@ -115,14 +116,30 @@ public class COSC322Test extends GamePlayer{
     	{
     		//this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get("game-state"));
     		System.out.println("Black: " +  (String)msgDetails.get("player-black") + " vs WHITE: " + (String)msgDetails.get("player-white"));
-    		this.initialize(false); //pass what colour we are.
-    		this.takeTurn(null);
+    		if(userName.equals((String)msgDetails.get("player-white")))
+    		{
+    			//we are white
+    			this.initialize(true);
+    		}
+    		else
+    		{
+    			this.initialize(false); //else we are black
+    			this.takeTurn();//black goes first
+    		}
+    		
+    		
     	}
     	
     	else if(messageType.equals(GameMessage.GAME_ACTION_MOVE))
     	{
     		this.getGameGUI().updateGameState(msgDetails);
-    		System.out.println(msgDetails);
+    		ArrayList<Integer> qCur = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
+    		ArrayList<Integer> qMove = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);
+    		ArrayList<Integer> arrow = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS);
+    		
+    		Move opMove = new Move(GameState.yxToIndex(qCur.get(0), qCur.get(1)), GameState.yxToIndex(qMove.get(0), qMove.get(1)), GameState.yxToIndex(arrow.get(0), arrow.get(1)));
+    		opponentTurn(opMove);
+    		takeTurn();
     	}
     	
     	else
@@ -188,7 +205,7 @@ public class COSC322Test extends GamePlayer{
     	gameClient = new GameClient(userName, passwd, this);			
 	}
 	
-	public void takeTurn(ArrayList<Integer> state)
+	public void takeTurn()
 	{
 		//rn this is a skeleton
 		//decideMove(state) //heuristic function makes a decision and returns an object

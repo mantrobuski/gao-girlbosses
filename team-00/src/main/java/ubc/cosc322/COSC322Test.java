@@ -201,7 +201,7 @@ public class COSC322Test extends GamePlayer{
 		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
 		
 		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
-		
+		this.getGameGUI().updateGameState(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState); //this is fake
 		this.tree.nodes.remove(this.tree.getRoot());
@@ -212,7 +212,7 @@ public class COSC322Test extends GamePlayer{
 	{
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState);
-		
+		this.tree.nodes.remove(this.tree.getRoot());
 		this.tree.addNode(newRoot, tree.getRoot(), move);
 		this.tree.setRoot(newRoot);
 	}

@@ -58,6 +58,7 @@ public class GameTree
 		this.white = white;
 	}
 	
+	/*
 	public Move selectMove()
 	{
 		//run UCB on each child
@@ -101,6 +102,7 @@ public class GameTree
 		
 		return xbar + Math.sqrt(confidence);
 	}
+	*/
 	
 	//runs count # of playouts
 	public void runPlayouts(GameNode start, int count)

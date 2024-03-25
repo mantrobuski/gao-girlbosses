@@ -237,7 +237,7 @@ public class COSC322Test extends GamePlayer{
 	public Move getMove()
 	{
 		//this function will use heuristics to make a move [<x, y>, <x, y> <x,y>] queen to move, square move to, arrow shoot location
-		return tree.selectMove();
+		return tree.iterativeDeepeningAlphaBeta(2);
 	}
 	
 	//true if we are white, false if we are black

@@ -171,6 +171,7 @@ public class GameTree
 		
 		for (int depth = 1; depth < maxDepth; depth++) {
 			// Initial alpha and beta
+			System.out.println("Evaluating depth: " + depth);
 			int MAX = Integer.MAX_VALUE;
 			int MIN = -1 * Integer.MAX_VALUE;
 	

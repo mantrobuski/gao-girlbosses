@@ -105,8 +105,8 @@ public class COSC322Test extends GamePlayer{
 	      e.printStackTrace();
 	    }
     	
-    	//COSC322Test player = new COSC322Test(args[0], args[1]);
-    	HumanPlayer player = new HumanPlayer();
+    	COSC322Test player = new COSC322Test(args[0], args[1]);
+    	//HumanPlayer player = new HumanPlayer();
     	
     	
     	if(player.getGameGUI() == null) {
@@ -183,15 +183,15 @@ public class COSC322Test extends GamePlayer{
     	{
     		//this.getGameGUI().setGameState((ArrayList<Integer>) msgDetails.get("game-state"));
     		System.out.println("Black: " +  (String)msgDetails.get("player-black") + " vs WHITE: " + (String)msgDetails.get("player-white"));
-    		if(userName.equals((String)msgDetails.get("player-white")))
+    		boolean white = ((String) msgDetails.get("player-white")).equals(this.userName);
+    		
+    		this.initialize(white); //pass what colour we are.
+    		
+    		//if we are black we go first
+    		if(!white)
     		{
-    			//we are white
-    			this.initialize(true);
-    		}
-    		else
-    		{
-    			this.initialize(false); //else we are black
-    			this.takeTurn();//black goes first
+    			//go
+    			takeTurn();
     		}
     		
     		
@@ -199,6 +199,7 @@ public class COSC322Test extends GamePlayer{
     	
     	else if(messageType.equals(GameMessage.GAME_ACTION_MOVE))
     	{
+    		System.out.println("recieved opponent move");
     		this.getGameGUI().updateGameState(msgDetails);
     		ArrayList<Integer> qCur = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_CURR);
     		ArrayList<Integer> qMove = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.QUEEN_POS_NEXT);

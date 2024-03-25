@@ -26,9 +26,28 @@ public class GameTree
 		return root;
 	}
 	
+	//trys to find an exisiting node so we don't overwrite the exisiting tree
+	// NOTE that equals is overriden to only compare states
 	public void setRoot(GameNode node)
 	{
-		this.root = node;
+		if(this.root.children != null)
+		{
+			for(GameNode child : this.root.children)
+			{
+				if(child.equals(node))
+				{
+					this.root = child;
+					break;
+				}
+			}
+		}
+		
+		else
+		{
+			this.root = node;
+		}
+		
+		
 	}
 	
 	public void popNode(GameNode node)

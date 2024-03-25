@@ -302,9 +302,12 @@ public class COSC322Test extends GamePlayer{
 		//(queen x,y move to x,y  shoot arrow, x,y queenToMove.x, queenMove.x, arrow.x
 		
 		//MAKE AS MANY PLAYOUTS AS POSSIBLE
+		long startTime = System.currentTimeMillis();
 		
 		Move move = getMove();
 		
+		long endTime = System.currentTimeMillis();
+		System.out.println("Got move in " + (endTime - startTime) + "ms");
 		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
 		
 		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
@@ -330,7 +333,7 @@ public class COSC322Test extends GamePlayer{
 		if(this.tree.white && this.turnCount == 1)
 		{
 			ArrayList<Move> moves = this.tree.getRoot().state.getMoves();
-			 if(moves.size() == 0) System.out.println("WE LOSE");
+			 if(moves == null) System.out.println("WE LOSE");
 			 else
 			 {
 				 return moves.get(new Random().nextInt(moves.size()));

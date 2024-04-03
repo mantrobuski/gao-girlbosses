@@ -22,7 +22,7 @@ public class SearchTimer {
 				tree.timerInterrupt = true;
 				
 			}
-		}, 270000); // 27 seconds!
+		}, 27000); // 27 seconds!
 	}
 	
 	public void timerCancel() {

@@ -14,12 +14,9 @@ public class GameTree
 	//doing this because we have ovverride the equals of GameNode to only look at the state of the board and to ignore the parents and children when comparing because we do it in this class instead
 	//Hashtable<GameNode, GameNode> nodes;
 	private GameNode root;
-	
 	boolean white; //are we white or black, true for white
-
 	public boolean timerInterrupt = false;
-	private boolean white; //are we white or black, true for white
-
+	
 	public GameTree(GameNode root)
 	{
 		this.root = root;
@@ -124,6 +121,7 @@ public class GameTree
 	*/
 	
 	//runs count # of playouts
+	/*
 	public void runPlayouts(GameNode start, int count)
 	{
 		for(int i = 0; i < count; i++)
@@ -131,8 +129,10 @@ public class GameTree
 			playout(start);
 		}
 	}
+	*/
 	
 	//simulate full game
+	/*
 	public void playout(GameNode start)
 	{
 		
@@ -181,7 +181,7 @@ public class GameTree
 		}
 		
 	}
-			
+	*/	
 	
 	public Move iterativeDeepeningAlphaBeta(int maxDepth)
 	{

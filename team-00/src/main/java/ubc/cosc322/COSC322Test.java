@@ -325,7 +325,12 @@ public class COSC322Test extends GamePlayer{
 		System.out.println("Got move in " + (endTime - startTime) + "ms");
 		
 		//we  make a move in under 2s, add to the depth
-		if(endTime - startTime < 2000 && turnCount > 7)
+		if(this.tree.timerInterrupt)
+		{
+			depth--; //reduce depth if we were out of time
+			if(depth < 1) depth = 1;
+		}
+		else if(endTime - startTime < 2000 && turnCount > 7)
 		{
 			depth ++;
 		}
@@ -403,6 +408,7 @@ public class COSC322Test extends GamePlayer{
 		//do more here
 	}
 	
+	/*
 	public void benchmark()
 	{
 		try 
@@ -428,6 +434,7 @@ public class COSC322Test extends GamePlayer{
 	      e.printStackTrace();
 	    }
 	}
+	*/
 
  
 }//end of class

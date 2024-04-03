@@ -36,7 +36,7 @@ public class COSC322Test extends GamePlayer{
     
     private int turnCount = 0;
     private int depth = 1;
-	private ArrayList<Move> possibleOpponentMoves = new ArrayList<Move>();
+	//private ArrayList<Move> possibleOpponentMoves = new ArrayList<Move>();
  
     private SearchTimer Timer;
     
@@ -235,12 +235,13 @@ public class COSC322Test extends GamePlayer{
     		
     		Move opMove = new Move(GameState.yxToIndex(qCur.get(0), qCur.get(1)), GameState.yxToIndex(qMove.get(0), qMove.get(1)), GameState.yxToIndex(arrow.get(0), arrow.get(1)));
     		try {
+    			this.tree.popNode(this.tree.getRoot()); //make sure the roots children are populated
 				opponentTurn(opMove);
 			} catch (Exception e) {
 				// this happens if they submit an invalid move
+				System.err.println(e);
 				this.tree.getRoot().state.printBoard();
 				System.out.println(opMove.toString());
-				e.printStackTrace();
 			}
     		takeTurn();
     	}
@@ -340,8 +341,8 @@ public class COSC322Test extends GamePlayer{
 		//this.tree.nodes.remove(this.tree.getRoot());
 		this.tree.setRoot(newRoot);
 
-		possibleOpponentMoves = this.tree.getRoot().state.getMoves();
-		if(possibleOpponentMoves != null) System.out.println("Possible Opponent Moves: " + possibleOpponentMoves.size());
+		//possibleOpponentMoves = this.tree.getRoot().state.getMoves();
+		//if(possibleOpponentMoves != null) System.out.println("Possible Opponent Moves: " + possibleOpponentMoves.size());
 		
 		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
 		
@@ -354,27 +355,22 @@ public class COSC322Test extends GamePlayer{
 	{
 		//check if move is in global array
 		//for some reason contains behaves weirdly, even though equals is override
+		//if the root has children
 		boolean valid = false;
-		if(possibleOpponentMoves != null)
+		if(this.tree.getRoot().children != null && !this.tree.getRoot().children.isEmpty())
 		{
-			for(Move test : possibleOpponentMoves)
+			for(GameNode child : this.tree.getRoot().children)
 			{
-				if(test.qCur == move.qCur && test.qMove == move.qMove && test.arrow == move.arrow)
-				{
-					valid = true;
-					break;
-				}
+				//see if the route exists from current root to an exisiting child through the move that is passed
+				if(child.route.get(this.tree.getRoot()).equals(move)) valid = true;
 			}
 		}
 		else
 		{
-			System.out.println("Opponent should LOSE here");
+			throw new Exception("NO VALID MOVES, OPPONENT SHOULD LOSE");
 		}
 		
-		if(!valid)
-		{
-			throw new Exception("INVALID OPPONENT MOVE");
-		}
+		if(!valid) throw new Exception("Opponent submitted invalid move");
 		
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState);

@@ -292,6 +292,7 @@ public class GameTree
 			
 			//bail early if we're out of time
 			if (this.timerInterrupt) {
+				//System.out.println("INTERUPT, VAL: " + bestVal);
 				return new MoveVal(bestMove, bestVal);
 			}
 			

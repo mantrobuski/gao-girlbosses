@@ -327,7 +327,7 @@ public class COSC322Test extends GamePlayer{
 		System.out.println("Got move in " + (endTime - startTime) + "ms");
 		
 		//we  make a move in under 10s, add to the depth
-		if(endTime - startTime < 10000)
+		if(endTime - startTime < 10000 && turnCount > 7)
 		{
 			depth ++;
 		}

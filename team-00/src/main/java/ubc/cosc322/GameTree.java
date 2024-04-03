@@ -36,6 +36,7 @@ public class GameTree
 	public void popNode(GameNode node)
 	{
 		ArrayList<Move> moves = node.state.getMoves();
+		if(moves == null) return;
 		for(Move move : moves)
 		{
 			GameState newState = node.state.makeMove(move);

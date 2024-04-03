@@ -45,5 +45,12 @@ public class Move
 		
 		return out;
 	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		Move o = (Move) other;
+		return this.qCur == o.qCur && this.qMove == o.qMove && this.arrow == o.arrow;
+	}
 
 }

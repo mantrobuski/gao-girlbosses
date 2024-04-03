@@ -35,6 +35,7 @@ public class COSC322Test extends GamePlayer{
     private GameTree tree;
     
     private int turnCount = 0;
+	private ArrayList<Move> possibleOpponentMoves = new ArrayList<Move>();
  
 	
     /**
@@ -308,18 +309,26 @@ public class COSC322Test extends GamePlayer{
 		
 		long endTime = System.currentTimeMillis();
 		System.out.println("Got move in " + (endTime - startTime) + "ms");
-		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
-		
-		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
-		this.getGameGUI().updateGameState(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
+
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState); //this is fake
 		//this.tree.nodes.remove(this.tree.getRoot());
 		this.tree.setRoot(newRoot);
+
+		possibleOpponentMoves = this.tree.getRoot().state.getMoves();
+		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
+		
+		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
+		this.getGameGUI().updateGameState(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
+		
 	}
 	
 	public void opponentTurn(Move move)
 	{
+		//check if move is in global array
+		if (!possibleOpponentMoves.contains(move)) 
+			System.err.println("Invalid opponent move");
+		
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState);
 		//this.tree.nodes.remove(this.tree.getRoot());

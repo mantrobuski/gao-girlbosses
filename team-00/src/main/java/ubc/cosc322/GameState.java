@@ -134,7 +134,6 @@ public class GameState
 				if(xQueen < 1 || yQueen < 1 || xQueen > 10 || yQueen > 10) break;
 				tempIndex = yxToIndex(yQueen, xQueen);
 
-				//System.out.println("x:" + xQueen + ", y: " + yQueen);
 				if (this.board[tempIndex] == 0) { // SLOW fix later
 					tempMoves.add(tempIndex);
 				}
@@ -157,7 +156,7 @@ public class GameState
 			{
 				xArrow = queenXY[1];
 				yArrow = queenXY[0];
-				while ((xArrow > 0 && xArrow <= 10) && (yArrow > 0 && yArrow <= 10)) { // could make less cases with mod?
+				while ((xArrow > 0 && xArrow <= 10) && (yArrow > 0 && yArrow <= 10)) {
 					switch (j) {
 						case 0: // UP
 							yArrow++;
@@ -207,8 +206,6 @@ public class GameState
 	public ArrayList<Move> getMoves()
 	{
 		ArrayList<Move> output = new ArrayList<Move>();
-		//look at the Move class to see what the Move object is,
-		//it's just the three components in index notation
 		
 		ArrayList<Integer> queens = new ArrayList<Integer>();
 		
@@ -222,9 +219,6 @@ public class GameState
 			//add the index of the queens we care about
 			if(board[i] == queenTarget) queens.add(i);
 		}
-		
-		//one helpful thing
-		//if(board[index] != 0) ---> if this condition is true there is something that blocks vision (shot tile, or another queen)
 		
 		//for each queen figure out every tile they can move to in all 8 directions
 		ArrayList<Integer> possibleQueenMoves = new ArrayList<>(); //holds moves the queen can move to
@@ -320,7 +314,7 @@ public class GameState
 		}
 		// loop through each cell and find queen closest to the empty cell
 		// also finds how close
-		HashMap<Integer, ArrayList<Integer>> stupidMap = new HashMap<Integer, ArrayList<Integer>>();
+		HashMap<Integer, ArrayList<Integer>> moveMap = new HashMap<Integer, ArrayList<Integer>>();
 		for (int i = 0; i < this.board.length; i++) {
 			if (this.board[i] == 0) {
 				int whiteDepth = 0;
@@ -328,14 +322,14 @@ public class GameState
 				
 				ArrayList<Integer> first = new ArrayList<Integer>();
 				first.add(i);
-				stupidMap.put(0,  first);
+				moveMap.put(0,  first);
 				HashSet<Integer> visited = new HashSet<Integer>();
 				int depth = 0;
 				int maxDepth = 10;
 				while(depth <= maxDepth)
 				{
 					ArrayList<Integer> possibleMoves = new ArrayList<>(); 
-					ArrayList<Integer> moves = stupidMap.get(depth);
+					ArrayList<Integer> moves = moveMap.get(depth);
 					for(int move : moves) {
 						if(move < 0) continue;
 						ArrayList<Integer> foundMoves = findQueen(move);
@@ -343,7 +337,7 @@ public class GameState
 						if(foundMoves.size() >= 1)temp[0] = foundMoves.get(foundMoves.size() - 1);
 						if(foundMoves.size() >= 2)temp[1] = foundMoves.get(foundMoves.size() - 2);
 						//System.out.println(temp[0] + ", " + temp[1]);
-						//white quene
+						//white queen
 						if(IntStream.of(temp).anyMatch(x -> x == -1000) && whiteDepth == 0) whiteDepth = depth + 1;
 							
 						//black
@@ -359,20 +353,15 @@ public class GameState
 						}
 					}
 					
-					
-					
-					
 					if(whiteDepth != 0 && blackDepth != 0) break;
 					
-					
-					
-					stupidMap.put(depth + 1, possibleMoves);
+					moveMap.put(depth + 1, possibleMoves);
 					depth ++;
 				}
 				if(whiteDepth == 0) whiteDepth = maxDepth;
 				if(blackDepth == 0) blackDepth = maxDepth;
-				stupidMap = new HashMap<Integer, ArrayList<Integer>>();
-				//System.out.println("whitedpeth: " + whiteDepth + ", blacck: " + blackDepth);
+				moveMap = new HashMap<Integer, ArrayList<Integer>>();
+				//System.out.println("whitedepth: " + whiteDepth + ", blacck: " + blackDepth);
 				territorySum += relTerritoryEvaluation(whiteDepth, blackDepth);
 			}
 		}
@@ -512,6 +501,13 @@ public class GameState
 		output.append("----------------\n");
 		
 		return output.toString();
+	}
+
+	public boolean validateMove() {
+		boolean valid = false;
+		// run while opponent is playing
+		
+		return valid;
 	}
 	
 	

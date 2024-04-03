@@ -232,6 +232,8 @@ public class COSC322Test extends GamePlayer{
 				opponentTurn(opMove);
 			} catch (Exception e) {
 				// this happens if they submit an invalid move
+				this.tree.getRoot().state.printBoard();
+				System.out.println(opMove.toString());
 				e.printStackTrace();
 			}
     		takeTurn();

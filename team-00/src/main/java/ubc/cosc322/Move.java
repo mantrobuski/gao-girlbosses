@@ -52,5 +52,11 @@ public class Move
 		Move o = (Move) other;
 		return this.qCur == o.qCur && this.qMove == o.qMove && this.arrow == o.arrow;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "Qcur: " + GameState.indexToYX(this.qCur).toString() + ", " + "Qmove: " + GameState.indexToYX(this.qMove).toString() + ", " + "Arrow: " + GameState.indexToYX(this.arrow).toString();
+	}
 
 }

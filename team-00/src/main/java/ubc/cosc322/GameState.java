@@ -191,7 +191,13 @@ public class GameState
 					if(xArrow < 1 || yArrow < 1 || xArrow > 10 || yArrow > 10) break;
 					int tempIndex = yxToIndex(yArrow, xArrow);
 	
-					if (this.board[tempIndex] == 0 && tempIndex != yxToIndex(queenXY[0], queenXY[1])) {
+					//shooting arrow where you originally where
+					if(tempIndex == queenIndex)
+					{
+						Move move = new Move(queenIndex, moves.get(i), tempIndex); //these are in index notation
+						output.add(move);
+					}
+					else if (this.board[tempIndex] == 0 && tempIndex != yxToIndex(queenXY[0], queenXY[1])) {
 						Move move = new Move(queenIndex, moves.get(i), tempIndex); //these are in index notation
 						output.add(move);
 					}

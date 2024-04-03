@@ -338,6 +338,7 @@ public class COSC322Test extends GamePlayer{
 		this.tree.setRoot(newRoot);
 
 		possibleOpponentMoves = this.tree.getRoot().state.getMoves();
+		if(possibleOpponentMoves != null) System.out.println("Possible Opponent Moves: " + possibleOpponentMoves.size());
 		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
 		
 		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());

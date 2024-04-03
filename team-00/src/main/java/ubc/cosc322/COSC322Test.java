@@ -337,7 +337,7 @@ public class COSC322Test extends GamePlayer{
 		{
 			for(Move test : possibleOpponentMoves)
 			{
-				if(test.equals(move))
+				if(test.qCur == move.qCur && test.qMove == move.qMove && test.arrow == move.arrow)
 				{
 					valid = true;
 					break;

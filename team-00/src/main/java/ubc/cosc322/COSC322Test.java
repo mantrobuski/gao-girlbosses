@@ -228,7 +228,12 @@ public class COSC322Test extends GamePlayer{
     		ArrayList<Integer> arrow = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS);
     		
     		Move opMove = new Move(GameState.yxToIndex(qCur.get(0), qCur.get(1)), GameState.yxToIndex(qMove.get(0), qMove.get(1)), GameState.yxToIndex(arrow.get(0), arrow.get(1)));
-    		opponentTurn(opMove);
+    		try {
+				opponentTurn(opMove);
+			} catch (Exception e) {
+				// this happens if they submit an invalid move
+				e.printStackTrace();
+			}
     		takeTurn();
     	}
     	
@@ -323,11 +328,31 @@ public class COSC322Test extends GamePlayer{
 		
 	}
 	
-	public void opponentTurn(Move move)
+	public void opponentTurn(Move move) throws Exception
 	{
 		//check if move is in global array
-		if (!possibleOpponentMoves.contains(move)) 
-			System.err.println("Invalid opponent move");
+		//for some reason contains behaves weirdly, even though equals is override
+		boolean valid = false;
+		if(possibleOpponentMoves != null)
+		{
+			for(Move test : possibleOpponentMoves)
+			{
+				if(test.equals(move))
+				{
+					valid = true;
+					break;
+				}
+			}
+		}
+		else
+		{
+			System.out.println("Opponent should LOSE here");
+		}
+		
+		if(!valid)
+		{
+			throw new Exception("INVALID OPPONENT MOVE");
+		}
 		
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState);

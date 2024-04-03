@@ -208,70 +208,334 @@ public class GameState
 		}
 		return output;
 	}
-
+	
 	public ArrayList<Move> getMoves()
 	{
 		ArrayList<Move> output = new ArrayList<Move>();
 		
-		ArrayList<Integer> queens = new ArrayList<Integer>();
+		int target = (whiteTurn ? 1 : -1);
 		
-		//set which queen symbol we are looking for
-		int queenTarget = 0;
-		if(this.whiteTurn) queenTarget = 1;
-		else queenTarget = -1;
+		//locate the queens
+		int[] queenLocations = new int[4];
+		int qi = 0;
 		
-		for(int i = 0; i < this.board.length; i++)
+		
+		for(int i = 0; i < board.length; i++)
 		{
-			//add the index of the queens we care about
-			if(board[i] == queenTarget) queens.add(i);
+			if(board[i] == target)
+			{
+				queenLocations[qi] = i;
+				qi++;
+				if(qi == 4) break; //found all queens
+			}
 		}
 		
-		//for each queen figure out every tile they can move to in all 8 directions
-		ArrayList<Integer> possibleQueenMoves = new ArrayList<>(); //holds moves the queen can move to
-
-		// loop through each queen
-		for (int i = 0; i < queens.size(); i++) {
-			possibleQueenMoves = queenMoves(queens.get(i));
-			output.addAll(arrowMoves(possibleQueenMoves, queens.get(i)));
-		}
-		
-		/*
-		try 
-    	{
-	      FileWriter myWriter = new FileWriter("boardstate.txt");
-	      
-	      int count = 0;
-	      for(int i = 0; i < board.length; i++)
-	      {
-	    	  myWriter.write(board[i]);
-	    	  count++;
-	    	  if(count == 10)
-	    	  {
-	    		  myWriter.write("\n");
-	    		  count = 0;
-	    	  }
-	      }
-	    		  
-
-	      myWriter.close();
-	      System.out.println("Successfully wrote to the file.");
-	    } catch (IOException e) 
-	    {
-	      System.out.println("An error occurred.");
-	      e.printStackTrace();
-	    }
-		*/
-		//printBoard();
-		if (output.size() == 0)
+		//now for each queen
+		for(int queen : queenLocations)
 		{
-			//System.out.println("NO MOVES");
-			return null;
+			ArrayList<Integer> sees = new ArrayList<Integer>();
+			int cursor = queen;
+			
+			//this is to reduce the total number of divisions
+			//range means how many tiles you can move in a given direction before going out of bounds
+			//when we move diagonally the range will the the min of the two cardinal directions
+			int upRange = 9 - (cursor % 10); 
+			int downRange = -(0 - (cursor % 10));
+			int rightRange = 9 - (cursor / 10);
+			int leftRange = -(0 - (cursor / 10));
+			
+			
+			//up
+			int range = upRange;
+			while(range > 0)
+			{
+				cursor += 1; //move UP one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//down
+			cursor = queen; //reset cursor
+			range = downRange;
+			while(range > 0)
+			{
+				cursor -= 1; //move DOWN one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//right
+			cursor = queen; //reset cursor
+			range = rightRange;
+			while(range > 0)
+			{
+				cursor += 10; //move RIGHT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//left
+			cursor = queen; //reset cursor
+			range = leftRange;
+			while(range > 0)
+			{
+				cursor -= 10; //move LEFT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//up-right
+			cursor = queen; //reset cursor
+			range = Math.min(rightRange, upRange);
+			while(range > 0)
+			{
+				cursor += 11; //move UP one and RIGHT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//up-left
+			cursor = queen; //reset cursor
+			range = Math.min(leftRange, upRange);
+			while(range > 0)
+			{
+				cursor -= 9; //move UP one and LEFT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//down-right
+			cursor = queen; //reset cursor
+			range = Math.min(rightRange, downRange);
+			while(range > 0)
+			{
+				cursor += 9; //move DOWN one and RIGHT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//down-left
+			cursor = queen; //reset cursor
+			range = Math.min(leftRange, downRange);
+			while(range > 0)
+			{
+				cursor -= 11; //move DOWN one and LEFT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//now do this again for all the tiles you just discovered for arrow locations
+			for(int qMove : sees)
+			{
+				cursor = qMove;
+				
+				//this is to reduce the total number of divisions
+				//range means how many tiles you can move in a given direction before going out of bounds
+				//when we move diagonally the range will the the min of the two cardinal directions
+				upRange = 9 - (cursor % 10); 
+				downRange = -(0 - (cursor % 10));
+				rightRange = 9 - (cursor / 10);
+				leftRange = -(0 - (cursor / 10));
+				
+				
+				//up
+				range = upRange;
+				while(range > 0)
+				{
+					cursor += 1; //move UP one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//down
+				cursor = qMove; //reset cursor
+				range = downRange;
+				while(range > 0)
+				{
+					cursor -= 1; //move DOWN one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//right
+				cursor = qMove; //reset cursor
+				range = rightRange;
+				while(range > 0)
+				{
+					cursor += 10; //move RIGHT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//left
+				cursor = qMove; //reset cursor
+				range = leftRange;
+				while(range > 0)
+				{
+					cursor -= 10; //move LEFT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//up-right
+				cursor = qMove; //reset cursor
+				range = Math.min(rightRange, upRange);
+				while(range > 0)
+				{
+					cursor += 11; //move UP one and RIGHT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//up-left
+				cursor = qMove; //reset cursor
+				range = Math.min(leftRange, upRange);
+				while(range > 0)
+				{
+					cursor -= 9; //move UP one and LEFT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//down-right
+				cursor = qMove; //reset cursor
+				range = Math.min(rightRange, downRange);
+				while(range > 0)
+				{
+					cursor += 9; //move DOWN one and RIGHT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//down-left
+				cursor = qMove; //reset cursor
+				range = Math.min(leftRange, downRange);
+				while(range > 0)
+				{
+					cursor -= 11; //move DOWN one and LEFT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+			}
 		}
-		else 	
-			return output;
+		
+		if(output.size() == 0) return null; //NO MOVES, this is an end position, someone has lost
+		else return output;
+		
 	}
-	
-	
+		
 	//***********************************************************************
 	//swap out the function called here to use a different heuristic function
 	//***********************************************************************

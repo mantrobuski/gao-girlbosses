@@ -10,7 +10,7 @@ public class SearchTimer {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Timer timer;
+	public Timer timer = new Timer();
 	//public boolean timerInterrupt;
 	
 	public void startSearching() {

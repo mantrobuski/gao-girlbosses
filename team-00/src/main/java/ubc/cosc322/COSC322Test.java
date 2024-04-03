@@ -35,6 +35,7 @@ public class COSC322Test extends GamePlayer{
     private GameTree tree;
     
     private int turnCount = 0;
+    private int depth = 1;
 	private ArrayList<Move> possibleOpponentMoves = new ArrayList<Move>();
  
 	
@@ -96,11 +97,19 @@ public class COSC322Test extends GamePlayer{
     	
     	try 
     	{
-	      FileWriter myWriter = new FileWriter("territory.txt");
+	      FileWriter myWriter = new FileWriter("moves.txt");
 	      
 	      myWriter.write(test.toString());
 	      
 	      myWriter.write("Territory eval: " + test.territoryHeuristic());
+	      myWriter.write("\n");
+	      
+	      ArrayList<Move> moves = test.getMoves();
+	      for(Move move : moves)
+	      {
+	    	  myWriter.write(move.toString());
+	    	  myWriter.write("\n");
+	      }
 	    		  
 
 	      myWriter.close();
@@ -116,8 +125,8 @@ public class COSC322Test extends GamePlayer{
     	testTree.setColour(false);
     	
     	testTree.iterativeDeepeningAlphaBeta(1);
-    	
     	*/
+    	
     	
     	COSC322Test player = new COSC322Test(args[0], args[1]);
     	//HumanPlayer player = new HumanPlayer();
@@ -316,6 +325,12 @@ public class COSC322Test extends GamePlayer{
 		
 		long endTime = System.currentTimeMillis();
 		System.out.println("Got move in " + (endTime - startTime) + "ms");
+		
+		//we  make a move in under 10s, add to the depth
+		if(endTime - startTime < 10000)
+		{
+			depth ++;
+		}
 
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState); //this is fake
@@ -376,11 +391,8 @@ public class COSC322Test extends GamePlayer{
 			 }
 		}
 		
-		if(this.turnCount > 25) return tree.iterativeDeepeningAlphaBeta(3);
-		else if(this.turnCount > 20) return tree.iterativeDeepeningAlphaBeta(2);
-		
 		//this function will use heuristics to make a move [<x, y>, <x, y> <x,y>] queen to move, square move to, arrow shoot location
-		return tree.iterativeDeepeningAlphaBeta(1);
+		return tree.iterativeDeepeningAlphaBeta(depth);
 	}
 	
 	//true if we are white, false if we are black

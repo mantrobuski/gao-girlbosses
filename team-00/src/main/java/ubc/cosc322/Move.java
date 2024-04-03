@@ -1,6 +1,7 @@
 package ubc.cosc322;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Move 
 {
@@ -56,7 +57,7 @@ public class Move
 	@Override
 	public String toString()
 	{
-		return "Qcur: " + GameState.indexToYX(this.qCur).toString() + ", " + "Qmove: " + GameState.indexToYX(this.qMove).toString() + ", " + "Arrow: " + GameState.indexToYX(this.arrow).toString();
+		return "Qcur: " + Arrays.toString(GameState.indexToYX(this.qCur)) + ", " + "Qmove: " + Arrays.toString(GameState.indexToYX(this.qMove)) + ", " + "Arrow: " + Arrays.toString(GameState.indexToYX(this.arrow));
 	}
 
 }

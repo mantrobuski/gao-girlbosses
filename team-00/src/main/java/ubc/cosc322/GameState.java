@@ -134,7 +134,6 @@ public class GameState
 				if(xQueen < 1 || yQueen < 1 || xQueen > 10 || yQueen > 10) break;
 				tempIndex = yxToIndex(yQueen, xQueen);
 
-				//System.out.println("x:" + xQueen + ", y: " + yQueen);
 				if (this.board[tempIndex] == 0) { // SLOW fix later
 					tempMoves.add(tempIndex);
 				}
@@ -145,6 +144,7 @@ public class GameState
 		return tempMoves;
 	}
 
+	/*
 	public ArrayList<Move> arrowMoves(ArrayList<Integer> moves, int queenIndex) {
 		int xArrow = 1;
 		int yArrow = 1;
@@ -157,7 +157,7 @@ public class GameState
 			{
 				xArrow = queenXY[1];
 				yArrow = queenXY[0];
-				while ((xArrow > 0 && xArrow <= 10) && (yArrow > 0 && yArrow <= 10)) { // could make less cases with mod?
+				while ((xArrow > 0 && xArrow <= 10) && (yArrow > 0 && yArrow <= 10)) {
 					switch (j) {
 						case 0: // UP
 							yArrow++;
@@ -192,7 +192,13 @@ public class GameState
 					if(xArrow < 1 || yArrow < 1 || xArrow > 10 || yArrow > 10) break;
 					int tempIndex = yxToIndex(yArrow, xArrow);
 	
-					if (  (this.board[tempIndex] == 0 && tempIndex != yxToIndex(queenXY[0], queenXY[1])) || tempIndex == queenIndex) {
+					//shooting arrow where you originally where
+					if(tempIndex == queenIndex)
+					{
+						Move move = new Move(queenIndex, moves.get(i), tempIndex); //these are in index notation
+						output.add(move);
+					}
+					else if (this.board[tempIndex] == 0 && tempIndex != yxToIndex(queenXY[0], queenXY[1])) {
 						Move move = new Move(queenIndex, moves.get(i), tempIndex); //these are in index notation
 						output.add(move);
 					}
@@ -203,75 +209,335 @@ public class GameState
 		}
 		return output;
 	}
-
+	*/
+	
 	public ArrayList<Move> getMoves()
 	{
 		ArrayList<Move> output = new ArrayList<Move>();
-		//look at the Move class to see what the Move object is,
-		//it's just the three components in index notation
 		
-		ArrayList<Integer> queens = new ArrayList<Integer>();
+		int target = (whiteTurn ? 1 : -1);
 		
-		//set which queen symbol we are looking for
-		int queenTarget = 0;
-		if(this.whiteTurn) queenTarget = 1;
-		else queenTarget = -1;
+		//locate the queens
+		int[] queenLocations = new int[4];
+		int qi = 0;
 		
-		for(int i = 0; i < this.board.length; i++)
+		
+		for(int i = 0; i < board.length; i++)
 		{
-			//add the index of the queens we care about
-			if(board[i] == queenTarget) queens.add(i);
+			if(board[i] == target)
+			{
+				queenLocations[qi] = i;
+				qi++;
+				if(qi == 4) break; //found all queens
+			}
 		}
 		
-		//one helpful thing
-		//if(board[index] != 0) ---> if this condition is true there is something that blocks vision (shot tile, or another queen)
-		
-		//for each queen figure out every tile they can move to in all 8 directions
-		ArrayList<Integer> possibleQueenMoves = new ArrayList<>(); //holds moves the queen can move to
-
-		// loop through each queen
-		for (int i = 0; i < queens.size(); i++) {
-			possibleQueenMoves = queenMoves(queens.get(i));
-			output.addAll(arrowMoves(possibleQueenMoves, queens.get(i)));
-		}
-		
-		/*
-		try 
-    	{
-	      FileWriter myWriter = new FileWriter("boardstate.txt");
-	      
-	      int count = 0;
-	      for(int i = 0; i < board.length; i++)
-	      {
-	    	  myWriter.write(board[i]);
-	    	  count++;
-	    	  if(count == 10)
-	    	  {
-	    		  myWriter.write("\n");
-	    		  count = 0;
-	    	  }
-	      }
-	    		  
-
-	      myWriter.close();
-	      System.out.println("Successfully wrote to the file.");
-	    } catch (IOException e) 
-	    {
-	      System.out.println("An error occurred.");
-	      e.printStackTrace();
-	    }
-		*/
-		//printBoard();
-		if (output.size() == 0)
+		//now for each queen
+		for(int queen : queenLocations)
 		{
-			//System.out.println("NO MOVES");
-			return null;
+			ArrayList<Integer> sees = new ArrayList<Integer>();
+			int cursor = queen;
+			
+			//this is to reduce the total number of divisions
+			//range means how many tiles you can move in a given direction before going out of bounds
+			//when we move diagonally the range will the the min of the two cardinal directions
+			int upRange = 9 - (cursor % 10); 
+			int downRange = -(0 - (cursor % 10));
+			int rightRange = 9 - (cursor / 10);
+			int leftRange = -(0 - (cursor / 10));
+			
+			
+			//up
+			int range = upRange;
+			while(range > 0)
+			{
+				cursor += 1; //move UP one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//down
+			cursor = queen; //reset cursor
+			range = downRange;
+			while(range > 0)
+			{
+				cursor -= 1; //move DOWN one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//right
+			cursor = queen; //reset cursor
+			range = rightRange;
+			while(range > 0)
+			{
+				cursor += 10; //move RIGHT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//left
+			cursor = queen; //reset cursor
+			range = leftRange;
+			while(range > 0)
+			{
+				cursor -= 10; //move LEFT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//up-right
+			cursor = queen; //reset cursor
+			range = Math.min(rightRange, upRange);
+			while(range > 0)
+			{
+				cursor += 11; //move UP one and RIGHT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//up-left
+			cursor = queen; //reset cursor
+			range = Math.min(leftRange, upRange);
+			while(range > 0)
+			{
+				cursor -= 9; //move UP one and LEFT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//down-right
+			cursor = queen; //reset cursor
+			range = Math.min(rightRange, downRange);
+			while(range > 0)
+			{
+				cursor += 9; //move DOWN one and RIGHT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//down-left
+			cursor = queen; //reset cursor
+			range = Math.min(leftRange, downRange);
+			while(range > 0)
+			{
+				cursor -= 11; //move DOWN one and LEFT one
+				
+				//valid move
+				if(board[cursor] == 0)
+				{
+					sees.add(cursor);
+				}
+				else break; //can't see anywhere else in this direction cause it's blocked
+				
+				range--;
+			}
+			
+			//now do this again for all the tiles you just discovered for arrow locations
+			for(int qMove : sees)
+			{
+				cursor = qMove;
+				
+				//this is to reduce the total number of divisions
+				//range means how many tiles you can move in a given direction before going out of bounds
+				//when we move diagonally the range will the the min of the two cardinal directions
+				upRange = 9 - (cursor % 10); 
+				downRange = -(0 - (cursor % 10));
+				rightRange = 9 - (cursor / 10);
+				leftRange = -(0 - (cursor / 10));
+				
+				
+				//up
+				range = upRange;
+				while(range > 0)
+				{
+					cursor += 1; //move UP one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//down
+				cursor = qMove; //reset cursor
+				range = downRange;
+				while(range > 0)
+				{
+					cursor -= 1; //move DOWN one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//right
+				cursor = qMove; //reset cursor
+				range = rightRange;
+				while(range > 0)
+				{
+					cursor += 10; //move RIGHT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//left
+				cursor = qMove; //reset cursor
+				range = leftRange;
+				while(range > 0)
+				{
+					cursor -= 10; //move LEFT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//up-right
+				cursor = qMove; //reset cursor
+				range = Math.min(rightRange, upRange);
+				while(range > 0)
+				{
+					cursor += 11; //move UP one and RIGHT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//up-left
+				cursor = qMove; //reset cursor
+				range = Math.min(leftRange, upRange);
+				while(range > 0)
+				{
+					cursor -= 9; //move UP one and LEFT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//down-right
+				cursor = qMove; //reset cursor
+				range = Math.min(rightRange, downRange);
+				while(range > 0)
+				{
+					cursor += 9; //move DOWN one and RIGHT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+				
+				//down-left
+				cursor = qMove; //reset cursor
+				range = Math.min(leftRange, downRange);
+				while(range > 0)
+				{
+					cursor -= 11; //move DOWN one and LEFT one
+					
+					//valid move (this time allowing the arrow to go where the queen started)
+					if(board[cursor] == 0 || cursor == queen)
+					{
+						output.add(new Move(queen, qMove, cursor));
+					}
+					else break; //can't see anywhere else in this direction cause it's blocked
+					
+					range--;
+				}
+			}
 		}
-		else 	
-			return output;
+		
+		if(output.size() == 0) return null; //NO MOVES, this is an end position, someone has lost
+		else return output;
+		
 	}
-	
-	
+		
 	//***********************************************************************
 	//swap out the function called here to use a different heuristic function
 	//***********************************************************************
@@ -320,7 +586,7 @@ public class GameState
 		}
 		// loop through each cell and find queen closest to the empty cell
 		// also finds how close
-		HashMap<Integer, ArrayList<Integer>> stupidMap = new HashMap<Integer, ArrayList<Integer>>();
+		HashMap<Integer, ArrayList<Integer>> moveMap = new HashMap<Integer, ArrayList<Integer>>();
 		for (int i = 0; i < this.board.length; i++) {
 			if (this.board[i] == 0) {
 				int whiteDepth = 0;
@@ -328,14 +594,14 @@ public class GameState
 				
 				ArrayList<Integer> first = new ArrayList<Integer>();
 				first.add(i);
-				stupidMap.put(0,  first);
+				moveMap.put(0,  first);
 				HashSet<Integer> visited = new HashSet<Integer>();
 				int depth = 0;
 				int maxDepth = 10;
 				while(depth <= maxDepth)
 				{
 					ArrayList<Integer> possibleMoves = new ArrayList<>(); 
-					ArrayList<Integer> moves = stupidMap.get(depth);
+					ArrayList<Integer> moves = moveMap.get(depth);
 					for(int move : moves) {
 						if(move < 0) continue;
 						ArrayList<Integer> foundMoves = findQueen(move);
@@ -343,7 +609,7 @@ public class GameState
 						if(foundMoves.size() >= 1)temp[0] = foundMoves.get(foundMoves.size() - 1);
 						if(foundMoves.size() >= 2)temp[1] = foundMoves.get(foundMoves.size() - 2);
 						//System.out.println(temp[0] + ", " + temp[1]);
-						//white quene
+						//white queen
 						if(IntStream.of(temp).anyMatch(x -> x == -1000) && whiteDepth == 0) whiteDepth = depth + 1;
 							
 						//black
@@ -359,20 +625,15 @@ public class GameState
 						}
 					}
 					
-					
-					
-					
 					if(whiteDepth != 0 && blackDepth != 0) break;
 					
-					
-					
-					stupidMap.put(depth + 1, possibleMoves);
+					moveMap.put(depth + 1, possibleMoves);
 					depth ++;
 				}
 				if(whiteDepth == 0) whiteDepth = maxDepth;
 				if(blackDepth == 0) blackDepth = maxDepth;
-				stupidMap = new HashMap<Integer, ArrayList<Integer>>();
-				//System.out.println("whitedpeth: " + whiteDepth + ", blacck: " + blackDepth);
+				moveMap = new HashMap<Integer, ArrayList<Integer>>();
+				//System.out.println("whitedepth: " + whiteDepth + ", blacck: " + blackDepth);
 				territorySum += relTerritoryEvaluation(whiteDepth, blackDepth);
 			}
 		}
@@ -513,6 +774,13 @@ public class GameState
 		
 		return output.toString();
 	}
+
+	public boolean validateMove() {
+		boolean valid = false;
+		// run while opponent is playing
+		
+		return valid;
+	}
 	
 	
 	@Override
@@ -526,14 +794,7 @@ public class GameState
 	//TODO: compare this to using Arrays.hashCode(board);
 	public int hashCode()
 	{
-		//this is dirty but is faster than Arrays.equals()
-		//sum up every 5th value
-		int hash = 0;
-		for(int i = 0; i < board.length; i+=5)
-		{
-			hash += board[i];
-		}
-		return hash;
+		return Arrays.hashCode(board);
 	}
 
 }

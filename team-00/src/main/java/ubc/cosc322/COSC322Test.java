@@ -35,8 +35,12 @@ public class COSC322Test extends GamePlayer{
     private GameTree tree;
     
     private int turnCount = 0;
+    private int depth = 1;
+	//private ArrayList<Move> possibleOpponentMoves = new ArrayList<Move>();
  
-	
+    private SearchTimer Timer;
+    
+
     /**
      * The main method
      * @param args for name and passwd (current, any string would work)
@@ -95,11 +99,19 @@ public class COSC322Test extends GamePlayer{
     	
     	try 
     	{
-	      FileWriter myWriter = new FileWriter("territory.txt");
+	      FileWriter myWriter = new FileWriter("moves.txt");
 	      
 	      myWriter.write(test.toString());
 	      
 	      myWriter.write("Territory eval: " + test.territoryHeuristic());
+	      myWriter.write("\n");
+	      
+	      ArrayList<Move> moves = test.getMoves();
+	      for(Move move : moves)
+	      {
+	    	  myWriter.write(move.toString());
+	    	  myWriter.write("\n");
+	      }
 	    		  
 
 	      myWriter.close();
@@ -115,8 +127,8 @@ public class COSC322Test extends GamePlayer{
     	testTree.setColour(false);
     	
     	testTree.iterativeDeepeningAlphaBeta(1);
-    	
     	*/
+    	
     	
     	COSC322Test player = new COSC322Test(args[0], args[1]);
     	//HumanPlayer player = new HumanPlayer();
@@ -144,12 +156,7 @@ public class COSC322Test extends GamePlayer{
     	
     	GameNode root = new GameNode();
     	this.tree = new GameTree(root);
-    	
-    	//benchmark();
-    	
-    	//run as many playouts right now as we can get away with
-    	//int initialPlayouts = 200000;
-    	//this.tree.runPlayouts(root, initialPlayouts);
+    	this.Timer = new SearchTimer(this.tree);
     	
     	this.tree.popNode(root);
     	for(GameNode node : root.children)
@@ -227,7 +234,15 @@ public class COSC322Test extends GamePlayer{
     		ArrayList<Integer> arrow = (ArrayList<Integer>)msgDetails.get(AmazonsGameMessage.ARROW_POS);
     		
     		Move opMove = new Move(GameState.yxToIndex(qCur.get(0), qCur.get(1)), GameState.yxToIndex(qMove.get(0), qMove.get(1)), GameState.yxToIndex(arrow.get(0), arrow.get(1)));
-    		opponentTurn(opMove);
+    		try {
+    			this.tree.popNode(this.tree.getRoot()); //make sure the roots children are populated
+				opponentTurn(opMove);
+			} catch (Exception e) {
+				// this happens if they submit an invalid move
+				System.err.println(e);
+				this.tree.getRoot().state.printBoard();
+				System.out.println(opMove.toString());
+			}
     		takeTurn();
     	}
     	
@@ -297,26 +312,66 @@ public class COSC322Test extends GamePlayer{
 	public void takeTurn()
 	{
 		turnCount++;
-		//rn this is a skeleton
+
+		Timer.startSearching();
 		//decideMove(state) //heuristic function makes a decision and returns an object
 		//(queen x,y move to x,y  shoot arrow, x,y queenToMove.x, queenMove.x, arrow.x
 		
-		//MAKE AS MANY PLAYOUTS AS POSSIBLE
+		long startTime = System.currentTimeMillis();
 		
 		Move move = getMove();
+		Timer.timerCancel();
+
+		long endTime = System.currentTimeMillis();
+		System.out.println("Got move in " + (endTime - startTime) + "ms");
+		
+		//we  make a move in under 2s, add to the depth
+		if(this.tree.timerInterrupt)
+		{
+			depth--; //reduce depth if we were out of time
+			if(depth < 1) depth = 1;
+		}
+		else if(endTime - startTime < 2000 && turnCount > 7)
+		{
+			depth ++;
+		}
+
+		GameState newState = tree.getRoot().state.makeMove(move);
+		GameNode newRoot = new GameNode(newState); //this is fake
+		//this.tree.nodes.remove(this.tree.getRoot());
+		this.tree.setRoot(newRoot);
+
+		//possibleOpponentMoves = this.tree.getRoot().state.getMoves();
+		//if(possibleOpponentMoves != null) System.out.println("Possible Opponent Moves: " + possibleOpponentMoves.size());
 		
 		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
 		
 		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
 		this.getGameGUI().updateGameState(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
-		GameState newState = tree.getRoot().state.makeMove(move);
-		GameNode newRoot = new GameNode(newState); //this is fake
-		//this.tree.nodes.remove(this.tree.getRoot());
-		this.tree.setRoot(newRoot);
+		
 	}
 	
-	public void opponentTurn(Move move)
+	public void opponentTurn(Move move) throws Exception
 	{
+		//check if move is in global array
+		//for some reason contains behaves weirdly, even though equals is override
+		//if the root has children
+		boolean valid = false;
+		if(this.tree.getRoot().children != null && !this.tree.getRoot().children.isEmpty())
+		{
+			for(GameNode child : this.tree.getRoot().children)
+			{
+				//see if the route exists from current root to an exisiting child through the move that is passed
+				if(child.route.get(this.tree.getRoot()).equals(move)) valid = true;
+			}
+		}
+		else
+		{
+			throw new Exception("NO VALID MOVES, OPPONENT SHOULD LOSE");
+		}
+		
+		if(!valid) throw new Exception("Opponent submitted invalid move");
+		
 		GameState newState = tree.getRoot().state.makeMove(move);
 		GameNode newRoot = new GameNode(newState);
 		//this.tree.nodes.remove(this.tree.getRoot());
@@ -330,18 +385,15 @@ public class COSC322Test extends GamePlayer{
 		if(this.tree.white && this.turnCount == 1)
 		{
 			ArrayList<Move> moves = this.tree.getRoot().state.getMoves();
-			 if(moves.size() == 0) System.out.println("WE LOSE");
+			 if(moves == null) System.out.println("WE LOSE");
 			 else
 			 {
 				 return moves.get(new Random().nextInt(moves.size()));
 			 }
 		}
 		
-		if(this.turnCount > 25) return tree.iterativeDeepeningAlphaBeta(3);
-		else if(this.turnCount > 20) return tree.iterativeDeepeningAlphaBeta(2);
-		
 		//this function will use heuristics to make a move [<x, y>, <x, y> <x,y>] queen to move, square move to, arrow shoot location
-		return tree.iterativeDeepeningAlphaBeta(1);
+		return tree.iterativeDeepeningAlphaBeta(depth);
 	}
 	
 	//true if we are white, false if we are black
@@ -352,6 +404,7 @@ public class COSC322Test extends GamePlayer{
 		//do more here
 	}
 	
+	/*
 	public void benchmark()
 	{
 		try 
@@ -359,7 +412,7 @@ public class COSC322Test extends GamePlayer{
 	      FileWriter myWriter = new FileWriter("bench.txt");
 	      
 	      long start = System.currentTimeMillis();
-	      int playouts = 10000000;
+	      int playouts = 2000;
 	      
 	      //benchmark here
 	      this.tree.runPlayouts(this.tree.getRoot(), playouts);
@@ -377,6 +430,7 @@ public class COSC322Test extends GamePlayer{
 	      e.printStackTrace();
 	    }
 	}
+	*/
 
  
 }//end of class

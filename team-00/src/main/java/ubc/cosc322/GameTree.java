@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class GameTree 
 {
@@ -12,8 +14,8 @@ public class GameTree
 	//doing this because we have ovverride the equals of GameNode to only look at the state of the board and to ignore the parents and children when comparing because we do it in this class instead
 	//Hashtable<GameNode, GameNode> nodes;
 	private GameNode root;
-	
 	boolean white; //are we white or black, true for white
+	public boolean timerInterrupt = false;
 	
 	public GameTree(GameNode root)
 	{
@@ -34,6 +36,7 @@ public class GameTree
 	public void popNode(GameNode node)
 	{
 		ArrayList<Move> moves = node.state.getMoves();
+		if(moves == null) return;
 		for(Move move : moves)
 		{
 			GameState newState = node.state.makeMove(move);
@@ -119,6 +122,7 @@ public class GameTree
 	*/
 	
 	//runs count # of playouts
+	/*
 	public void runPlayouts(GameNode start, int count)
 	{
 		for(int i = 0; i < count; i++)
@@ -126,8 +130,10 @@ public class GameTree
 			playout(start);
 		}
 	}
+	*/
 	
 	//simulate full game
+	/*
 	public void playout(GameNode start)
 	{
 		
@@ -176,11 +182,11 @@ public class GameTree
 		}
 		
 	}
-			
+	*/	
 	
 	public Move iterativeDeepeningAlphaBeta(int maxDepth)
 	{
-
+		
 		Move solution = null;
 		
 		for (int depth = 1; depth <= maxDepth; depth++) {
@@ -198,10 +204,10 @@ public class GameTree
 			
 			
 			// TODO: Elana's Timer
-			// if (timerInterupt) {
-			//		break;
-			// }
-			//
+			if (this.timerInterrupt) {
+					return result.move;
+			 }
+			
 			}
 		
 		if(solution == null)
@@ -284,6 +290,12 @@ public class GameTree
 	            beta = Math.min(beta, bestVal);
 			}
 			
+			//bail early if we're out of time
+			if (this.timerInterrupt) {
+				//System.out.println("INTERUPT, VAL: " + bestVal);
+				return new MoveVal(bestMove, bestVal);
+			}
+			
 			// Alpha Beta Pruning
             if (beta <= alpha)
                 break;
@@ -293,5 +305,7 @@ public class GameTree
 		
 		return new MoveVal(bestMove, bestVal);
 	}
-
 }
+
+
+

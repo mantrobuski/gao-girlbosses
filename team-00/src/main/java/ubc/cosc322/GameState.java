@@ -11,18 +11,18 @@ import java.util.stream.IntStream;
 public class GameState 
 {
 	
-	int[] board; //1D
+	short[] board; //1D
 
 	boolean whiteTurn; //true if white to move, false if black to move
 	
-	int val = 0; //this will be updated by the heuristic function
+	short val = 0; //this will be updated by the heuristic function
 	boolean evaluated = false;
 	
 	//this is for initial state which is always the same
 	public GameState()
 	{
 		//all 0s
-		this.board = new int[100];
+		this.board = new short[100];
 		
 		//white queens
 		board[30] = 1;
@@ -42,15 +42,15 @@ public class GameState
 	public GameState(ArrayList<Integer> boardIn, boolean whiteTurn)
 	{
 		//convert arraylist to array because it's faster
-		board = new int[boardIn.size()];
+		board = new short[boardIn.size()];
         for(int i = 0; i < board.length; i++)
         {
-        	board[i] = boardIn.get(i);
+        	board[i] = boardIn.get(i).shortValue();
         }
 		this.whiteTurn = whiteTurn;
 	}
 	
-	public GameState(int[] board, boolean whiteTurn)
+	public GameState(short[] board, boolean whiteTurn)
 	{
 		this.board = board;
 		this.whiteTurn = whiteTurn;
@@ -79,7 +79,7 @@ public class GameState
 		//new state starts the same as the current state, except the turn is flipped
 		GameState newState = new GameState(this.board.clone(), !this.whiteTurn);
 		
-		int qVal = newState.board[move.qCur]; //get if this is a +1 or -1 queen
+		short qVal = newState.board[move.qCur]; //get if this is a +1 or -1 queen
 		newState.board[move.qCur] = 0; //queen moves off the tile
 		newState.board[move.qMove] = qVal; //queen moves to new tile
 		newState.board[move.arrow] = -99; //shoot the arrow
@@ -218,11 +218,11 @@ public class GameState
 		int target = (whiteTurn ? 1 : -1);
 		
 		//locate the queens
-		int[] queenLocations = new int[4];
+		short[] queenLocations = new short[4];
 		int qi = 0;
 		
 		
-		for(int i = 0; i < board.length; i++)
+		for(short i = 0; i < board.length; i++)
 		{
 			if(board[i] == target)
 			{
@@ -541,7 +541,7 @@ public class GameState
 	//***********************************************************************
 	//swap out the function called here to use a different heuristic function
 	//***********************************************************************
-	public int evaluate() 
+	public short evaluate() 
 	{
 		if(this.evaluated) return this.val;
 		
@@ -554,7 +554,7 @@ public class GameState
 		{
 			//no moves remain
 			//the player whos turn it is loses
-			val = (whiteTurn ? Integer.MIN_VALUE + 1 : Integer.MAX_VALUE - 1);
+			val = (short) (whiteTurn ? -32768 + 1 : 32767 - 1);
 		}
 		
 		//otherwise use a heuristic if no winner in position
@@ -568,14 +568,13 @@ public class GameState
 	//refer to that one super helpful paper we keep referencing to see the logic/definition of this
 	//use this.board as the board you're running on
 	//you'll  basically have to check each square once for white and once for black
-	public int territoryHeuristic()
+	public short territoryHeuristic()
 	{
 		// array lists holding locations of queens
 		ArrayList<Integer> blackQueens = new ArrayList<>();
 		ArrayList<Integer> whiteQueens = new ArrayList<>();
 		
-		int territorySum = 0;
-		int counter = 0;
+		short territorySum = 0;
 
 		// find queen locations
 		for (int i = 0; i < this.board.length; i++) {

@@ -192,8 +192,8 @@ public class GameTree
 		for (int depth = 1; depth <= maxDepth; depth++) {
 			// Initial alpha and beta
 			System.out.println("Evaluating depth: " + depth);
-			int MAX = Integer.MAX_VALUE;
-			int MIN = -1 * Integer.MAX_VALUE;
+			short MAX = 32767;
+			short MIN = -32768;
 	
 			//we want to use maximizing player if we're white, we want the minimizing player if we're black
 			MoveVal result = minimax(0, root, white, MIN, MAX, depth);
@@ -228,8 +228,8 @@ public class GameTree
 
 
 	public MoveVal minimax(int depth, GameNode node, 
-					   Boolean maximizingPlayer, int alpha,
-					   int beta, int maxDepth)
+					   Boolean maximizingPlayer, short alpha,
+					   short beta, int maxDepth)
 	{
 
 		// Terminating condition
@@ -237,7 +237,7 @@ public class GameTree
 			return new MoveVal(null, node.state.evaluate()); //there is no move at the leafs
 		
 		Move bestMove = null;
-		int bestVal = (maximizingPlayer ? Integer.MIN_VALUE : Integer.MAX_VALUE); //set the worst possible best value depending on if max or min player
+		short bestVal = (short) (maximizingPlayer ? -32768 : 32767); //set the worst possible best value depending on if max or min player
 
 		// Recurse on children
 		if(node.children.isEmpty())
@@ -279,15 +279,15 @@ public class GameTree
 			{
 				if(val > bestVal) bestMove = move;
 				
-	            bestVal = Math.max(val, bestVal);
-	            alpha = Math.max(alpha, bestVal);
+	            bestVal = (short) Math.max(val, bestVal);
+	            alpha = (short) Math.max(alpha, bestVal);
 			}
 			else
 			{
 				if(val < bestVal) bestMove = move;
 				
-				bestVal = Math.min(val, bestVal); //really it's worst val here
-	            beta = Math.min(beta, bestVal);
+				bestVal = (short) Math.min(val, bestVal); //really it's worst val here
+	            beta = (short) Math.min(beta, bestVal);
 			}
 			
 			//bail early if we're out of time

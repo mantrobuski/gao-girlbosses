@@ -5,9 +5,9 @@ public class MoveVal
 {
 	
 	public final Move move;
-	public final int val;
+	public final short val;
 	
-	public MoveVal(Move move, int val)
+	public MoveVal(Move move, short val)
 	{
 		this.move = move;
 		this.val = val;

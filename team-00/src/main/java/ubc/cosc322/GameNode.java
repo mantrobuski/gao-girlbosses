@@ -11,8 +11,8 @@ public class GameNode
 	
 	HashMap<GameNode, Move> route; //this is a handy index that contains the move that was required to get from a nodes parent to it 
 	
-	int playouts = 0;
-	int whiteWins = 0;
+	//int playouts = 0;
+	//int whiteWins = 0;
 	
 	//this creates a root node
 	public GameNode()

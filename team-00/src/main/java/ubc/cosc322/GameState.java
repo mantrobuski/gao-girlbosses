@@ -39,17 +39,6 @@ public class GameState
 		whiteTurn = false;
 	}
 	
-	public GameState(ArrayList<Integer> boardIn, boolean whiteTurn)
-	{
-		//convert arraylist to array because it's faster
-		board = new short[boardIn.size()];
-        for(int i = 0; i < board.length; i++)
-        {
-        	board[i] = boardIn.get(i).shortValue();
-        }
-		this.whiteTurn = whiteTurn;
-	}
-	
 	public GameState(short[] board, boolean whiteTurn)
 	{
 		this.board = board;
@@ -143,73 +132,6 @@ public class GameState
 		}
 		return tempMoves;
 	}
-
-	/*
-	public ArrayList<Move> arrowMoves(ArrayList<Integer> moves, int queenIndex) {
-		int xArrow = 1;
-		int yArrow = 1;
-		int [] queenXY = new int[2];
-		ArrayList<Move> output = new ArrayList<Move>();
-
-		for (int i = 0; i < moves.size(); i++) {
-			queenXY = indexToYX(moves.get(i));
-			for (int j = 0; j < 8; j++) // 8 possible directions, starts at up, then clockwise
-			{
-				xArrow = queenXY[1];
-				yArrow = queenXY[0];
-				while ((xArrow > 0 && xArrow <= 10) && (yArrow > 0 && yArrow <= 10)) {
-					switch (j) {
-						case 0: // UP
-							yArrow++;
-							break;
-						case 1: // UP-RIGHT
-							xArrow++;
-							yArrow++;
-							break;
-						case 2: // RIGHT
-							xArrow++;
-							break;
-						case 3: // RIGHT-DOWN
-							xArrow++;
-							yArrow--;
-							break;
-						case 4: // DOWN
-							yArrow--;
-							break;
-						case 5: // DOWN-LEFT
-							yArrow--;
-							xArrow--;
-							break;
-						case 6: // LEFT
-							xArrow--;
-							break;
-						case 7: // UP-LEFT
-							xArrow--;
-							yArrow++;
-							break;
-					}
-					
-					if(xArrow < 1 || yArrow < 1 || xArrow > 10 || yArrow > 10) break;
-					int tempIndex = yxToIndex(yArrow, xArrow);
-	
-					//shooting arrow where you originally where
-					if(tempIndex == queenIndex)
-					{
-						Move move = new Move(queenIndex, moves.get(i), tempIndex); //these are in index notation
-						output.add(move);
-					}
-					else if (this.board[tempIndex] == 0 && tempIndex != yxToIndex(queenXY[0], queenXY[1])) {
-						Move move = new Move(queenIndex, moves.get(i), tempIndex); //these are in index notation
-						output.add(move);
-					}
-					else
-						break;
-				}	
-			}
-		}
-		return output;
-	}
-	*/
 	
 	public ArrayList<Move> getMoves()
 	{

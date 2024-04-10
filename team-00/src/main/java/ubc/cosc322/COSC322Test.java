@@ -47,89 +47,6 @@ public class COSC322Test extends GamePlayer{
      */
     public static void main(String[] args) {	
     	
-    	/*
-    	int[] board = new int[100];
-    	board[9] = -1;
-    	board[88] = -1;
-    	board[12] = -1;
-    	board[62] = -1;
-    	
-    	board[17] = 1;
-    	board[21] = 1;
-    	board[75] = 1;
-    	board[72] = 1;
-    	
-    	board[40] = -99;
-    	board[51] = -99;
-    	board[71] = -99;
-    	board[81] = -99;
-    	board[2] = -99;
-    	board[32] = -99;
-    	board[42] = -99;
-    	board[52] = -99;
-    	board[13] = -99;
-    	board[23] = -99;
-    	board[33] = -99;
-    	board[63] = -99;
-    	board[4] = -99;
-    	board[24] = -99;
-    	board[54] = -99;
-    	board[64] = -99;
-    	board[74] = -99;
-    	board[84] = -99;
-    	board[94] = -99;
-    	board[15] = -99;
-    	board[55] = -99;
-    	board[16] = -99;
-    	board[26] = -99;
-    	board[36] = -99;
-    	board[46] = -99;
-    	board[56] = -99;
-    	board[76] = -99;
-    	board[47] = -99;
-    	board[57] = -99;
-    	board[67] = -99;
-    	board[77] = -99;
-    	board[97] = -99;
-    	board[38] = -99;
-    	board[19] = -99;
-    	board[59] = -99;
-    	
-    	GameState test = new GameState(board, true);
-    	
-    	try 
-    	{
-	      FileWriter myWriter = new FileWriter("moves.txt");
-	      
-	      myWriter.write(test.toString());
-	      
-	      myWriter.write("Territory eval: " + test.territoryHeuristic());
-	      myWriter.write("\n");
-	      
-	      ArrayList<Move> moves = test.getMoves();
-	      for(Move move : moves)
-	      {
-	    	  myWriter.write(move.toString());
-	    	  myWriter.write("\n");
-	      }
-	    		  
-
-	      myWriter.close();
-	      System.out.println("Successfully wrote to the file.");
-	    } catch (IOException e) 
-	    {
-	      System.out.println("An error occurred.");
-	      e.printStackTrace();
-	    }
-    	
-    	GameNode root = new GameNode();
-    	GameTree testTree = new GameTree(root);
-    	testTree.setColour(false);
-    	
-    	testTree.iterativeDeepeningAlphaBeta(1);
-    	*/
-    	
-    	
     	COSC322Test player = new COSC322Test(args[0], args[1]);
     	//HumanPlayer player = new HumanPlayer();
     	
@@ -337,11 +254,6 @@ public class COSC322Test extends GamePlayer{
 		//this.tree.nodes.remove(this.tree.getRoot());
 		this.tree.setRoot(newRoot);
 
-		//possibleOpponentMoves = this.tree.getRoot().state.getMoves();
-		//if(possibleOpponentMoves != null) System.out.println("Possible Opponent Moves: " + possibleOpponentMoves.size());
-		
-		//STALL AND RUN EVEN MORE PLAYOUTS HERE RIGHT UP TO 28 SECONDS BEFORE SENDING MOVE
-		
 		gameClient.sendMoveMessage(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
 		this.getGameGUI().updateGameState(move.getQCurCoords(), move.getQMoveCoords(), move.getArrowCoords());
 		
@@ -349,7 +261,6 @@ public class COSC322Test extends GamePlayer{
 	
 	public void opponentTurn(Move move) throws Exception
 	{
-		//check if move is in global array
 		//for some reason contains behaves weirdly, even though equals is override
 		//if the root has children
 		boolean valid = false;
@@ -400,33 +311,5 @@ public class COSC322Test extends GamePlayer{
 		//do more here
 	}
 	
-	/*
-	public void benchmark()
-	{
-		try 
-    	{
-	      FileWriter myWriter = new FileWriter("bench.txt");
-	      
-	      long start = System.currentTimeMillis();
-	      int playouts = 2000;
-	      
-	      //benchmark here
-	      this.tree.runPlayouts(this.tree.getRoot(), playouts);
-	      
-	      long stop = System.currentTimeMillis();
-	      
-	      myWriter.write(playouts + " playouts in " +  (int)(stop - start) + "ms");
-	    		  
-
-	      myWriter.close();
-	      System.out.println("Successfully wrote to the file.");
-	    } catch (IOException e) 
-	    {
-	      System.out.println("An error occurred.");
-	      e.printStackTrace();
-	    }
-	}
-	*/
-
  
 }//end of class

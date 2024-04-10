@@ -9,10 +9,6 @@ import java.util.TimerTask;
 
 public class GameTree 
 {
-	//this is a table where key == value, this is because you can get from the table by object
-	//hashset does not have this property
-	//doing this because we have ovverride the equals of GameNode to only look at the state of the board and to ignore the parents and children when comparing because we do it in this class instead
-	//Hashtable<GameNode, GameNode> nodes;
 	private GameNode root;
 	boolean white; //are we white or black, true for white
 	public boolean timerInterrupt = false;
@@ -33,6 +29,7 @@ public class GameTree
 		this.root = node;
 	}
 	
+	//populate all children of a node
 	public void popNode(GameNode node)
 	{
 		ArrayList<Move> moves = node.state.getMoves();
@@ -51,18 +48,6 @@ public class GameTree
 	{
 		node.addRoute(parent, move);
 		
-		//node is in the table already
-		/*
-		if(nodes.containsKey(node))
-		{
-			//marks the existing node as a child of the desired parent
-			GameNode existingNode = nodes.get(node);
-			parent.children.add(existingNode);
-			return existingNode;
-		}
-		*/
-		
-		//we have to do the above juggling so that we don't reference the wrong node object if one already exists
 		parent.children.add(node);
 		//nodes.put(node, node);
 		
@@ -73,116 +58,7 @@ public class GameTree
 	public void setColour(boolean white)
 	{
 		this.white = white;
-	}
-	
-	/*
-	public Move selectMove()
-	{
-		//run UCB on each child
-		double bestScore = -1;
-		Move bestMove = null;
-		
-		for(GameNode child : root.children)
-		{
-			double eval = UCB(child);
-			if(eval > bestScore)
-			{
-				bestScore = eval;
-				bestMove = child.route.get(root); //get the move that routes from root -> child
-			}
-		}
-		
-		//this code should NEVER RUN, but it's a fallback in case there is a bug somewhere
-		if(bestMove == null)
-		{
-			//if we couldn't select a move, pick one at random
-			ArrayList<Move> moves = root.state.getMoves();
-			bestMove = moves.get(new Random().nextInt(moves.size()));
-		}
-		
-		return bestMove;
-		
-	}
-	
-	//this can probably be optimzed at the cost of accuracy
-	public double UCB(GameNode node)
-	{
-		double whiteWinPercentage = 0.5;
-		if(node.playouts != 0)whiteWinPercentage = node.whiteWins / node.playouts;
-		
-		double xbar = (white ? whiteWinPercentage : 1 - whiteWinPercentage); //flipped odds if we are black
-		
-		double xbarSquared = xbar * xbar;
-		double logRoot = Math.log(root.playouts);
-		
-		double confidence = (logRoot / node.playouts) * Math.min(0.25, xbar - xbarSquared + Math.sqrt((2 * logRoot) / node.playouts));
-		
-		return xbar + Math.sqrt(confidence);
-	}
-	*/
-	
-	//runs count # of playouts
-	/*
-	public void runPlayouts(GameNode start, int count)
-	{
-		for(int i = 0; i < count; i++)
-		{
-			playout(start);
-		}
-	}
-	*/
-	
-	//simulate full game
-	/*
-	public void playout(GameNode start)
-	{
-		
-		GameNode cursor = start;
-		ArrayList<Move> moves = cursor.state.getMoves();
-		
-		//hold the visited moves, this will get updated after the result is determined
-		HashSet<GameNode> visited = new HashSet<GameNode>();
-		
-		//moves is null when the game is over
-		while(moves != null)
-		{
-			visited.add(cursor);
-			
-			//randomly select a move
-			Move move = moves.get(new Random().nextInt(moves.size()));
-			
-			//get resulting state from move
-			GameState newState = cursor.state.makeMove(move);
-			
-			//create node using the state
-			GameNode newNode = new GameNode(newState);
-			
-			//add it to the tree
-			this.addNode(newNode, cursor, move);
-			
-			//move cursor to this new node
-			cursor = newNode;
-			
-			//get new possible moves
-			moves = cursor.state.getMoves();
-		}
-		
-		visited.add(cursor);
-		
-		//determine result
-		//the player whos turn it is loses (at end state)
-		boolean result = !cursor.state.whiteTurn; //true for white win
-		
-		//back propigate
-		for(GameNode node : visited)
-		{
-			node.playouts += 1;
-			if(result) node.whiteWins += 1;
-			//no need to do this for black, white win % is whiteWins / playouts, black win % is 1 - white win %
-		}
-		
-	}
-	*/	
+	}	
 	
 	public Move iterativeDeepeningAlphaBeta(int maxDepth)
 	{
